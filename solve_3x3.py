@@ -24,6 +24,9 @@ def find_empty_cells(board):
 
 
 def check_cell_value(board, cell, test_value):
+    """Return True if the given number is legal
+        i.e. does not appear in the current row or column
+    Return False if the given number is illegal"""
     # print(board[cell[0],:], board[:,cell[1]]) TESTING
     if test_value not in board[cell[0],:] and test_value not in board[:,cell[1]]:
         # print(f"Value: {test_value} - True") TESTING
@@ -33,6 +36,9 @@ def check_cell_value(board, cell, test_value):
 
 
 def update_cell(board, cell):
+    """Try the available numbers from the current cell value + 1
+    Return the board if the current cell was successfully updated
+    Otherwise, if all available numbers are illegal, return False"""
     # print(f"\nCurrent cell: {cell}") TESTING
     cell_value = board[cell[0],cell[1]]
     cell_value_index = available_nums.index(board[cell[0],cell[1]])
@@ -42,17 +48,23 @@ def update_cell(board, cell):
         if check_cell_value(board, cell, num):
             board[cell[0],cell[1]] = num
             # print(f"Value changed to: {board[cell[0],cell[1]]}") TESTING
-            break
+            return (True, board)
+        elif available_nums.index(num) == len(available_nums) - 1:
+            return (False, board)
     # print(board) TESTING
-
-    return board
 
 
 def solve(board, empty_cells):
-    for cell in empty_cells:
-        board = update_cell(board, cell)
+    count = 0
+    while count != len(empty_cells):
+        result = update_cell(board, empty_cells[count])
+        if result[0] == False:
+            count -= 1
+        else:
+            count += 1
 
-    return board
+
+    return result[1]  # change this to board later
 
 
 def main():
@@ -70,5 +82,7 @@ if __name__ == "__main__":
 # Write solving algorithm:
     # Fill an empty cell with a number from available_nums
     # Check that the number is legal
-    # Otherwise, leave as zero (no backtracking just yet)
-    # So the grid will be partially solved and some of it will be wrong
+    # Otherwise, try next number
+    # If all numbers in available_nums have tried and failed, backtrack:
+        # Go back to previous cell
+        # Try next number in available_nums
