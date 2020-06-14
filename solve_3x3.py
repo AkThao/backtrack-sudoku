@@ -67,9 +67,10 @@ BOARD_10 = [
 ]
 
 BOARDS = [BOARD_1, BOARD_2, BOARD_3, BOARD_4, BOARD_5, BOARD_6, BOARD_7, BOARD_8, BOARD_9, BOARD_10]
+BOARD_SIZE = 3
 
 # All possible numbers that can appear in the puzzle
-available_nums = [0, 1, 2, 3]
+available_nums = list(range(BOARD_SIZE + 1))
 
 
 def find_empty_cells(board):
