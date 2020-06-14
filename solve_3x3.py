@@ -66,8 +66,9 @@ if __name__ == "__main__":
     main()
 
 
-# Todo:
+# Notes:
 # Write solving algorithm:
     # Fill an empty cell with a number from available_nums
     # Check that the number is legal
-    # Otherwise, leave as zero
+    # Otherwise, leave as zero (no backtracking just yet)
+    # So the grid will be partially solved and some of it will be wrong
