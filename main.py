@@ -46,7 +46,8 @@ def check_rows_cols(board, cell, test_value):
 def check_subgrid(board, cell, test_value):
     """Return True if the given number is legal
         i.e. does not appear in the current subgrid
-    Return False if the given number is illegal"""
+    Return False if the given number is illegal
+    """
     # Find subgrid coordinates
     subgrid_coords = ((cell[0] // SUBGRID_SIZE) * SUBGRID_SIZE,
                       (cell[1] // SUBGRID_SIZE) * SUBGRID_SIZE)
