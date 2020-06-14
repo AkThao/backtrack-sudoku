@@ -7,11 +7,67 @@ import numpy as np
 
 
 # Starting puzzle
-BOARD = [
+BOARD_1 = [
     [0, 0, 3],
     [2, 0, 0],
     [0, 0, 0]
 ]
+
+BOARD_2 = [
+    [1, 0, 0],
+    [0, 0, 0],
+    [0, 0, 3]
+]
+
+BOARD_3 = [
+    [0, 2, 0],
+    [0, 0, 0],
+    [1, 0, 0]
+]
+
+BOARD_4 = [
+    [0, 0, 0],
+    [0, 0, 2],
+    [1, 0, 0]
+]
+
+BOARD_5 = [
+    [3, 0, 0],
+    [0, 0, 0],
+    [0, 2, 0]
+]
+
+BOARD_6 = [
+    [2, 0, 0],
+    [0, 0, 0],
+    [0, 0, 1]
+]
+
+BOARD_7 = [
+    [1, 0, 0],
+    [0, 0, 0],
+    [0, 3, 0]
+]
+
+BOARD_8 = [
+    [0, 0, 1],
+    [0, 2, 0],
+    [0, 0, 0]
+]
+
+BOARD_9 = [
+    [0, 0, 1],
+    [0, 0, 0],
+    [2, 0, 0]
+]
+
+BOARD_10 = [
+    [2, 0, 0],
+    [0, 0, 1],
+    [0, 0, 0]
+]
+
+BOARDS = [BOARD_1, BOARD_2, BOARD_3, BOARD_4, BOARD_5, BOARD_6, BOARD_7, BOARD_8, BOARD_9, BOARD_10]
 
 # All possible numbers that can appear in the puzzle
 available_nums = [0, 1, 2, 3]
@@ -27,11 +83,11 @@ def check_cell_value(board, cell, test_value):
     """Return True if the given number is legal
         i.e. does not appear in the current row or column
     Return False if the given number is illegal"""
-    # print(board[cell[0],:], board[:,cell[1]]) TESTING
+    # print(board[cell[0],:], board[:,cell[1]])
     if test_value not in board[cell[0],:] and test_value not in board[:,cell[1]]:
-        # print(f"Value: {test_value} - True") TESTING
+        # print(f"Value: {test_value} - True")
         return True
-    # print(f"Value: {test_value} - False") TESTING
+    # print(f"Value: {test_value} - False")
     return False
 
 
@@ -39,24 +95,29 @@ def update_cell(board, cell):
     """Try the available numbers from the current cell value + 1
     Return the board if the current cell was successfully updated
     Otherwise, if all available numbers are illegal, return False"""
-    # print(f"\nCurrent cell: {cell}") TESTING
+    # print(f"\nCurrent cell: {cell}")
+    # print(f"Board: {board}")
     cell_value = board[cell[0],cell[1]]
-    cell_value_index = available_nums.index(board[cell[0],cell[1]])
+    cell_value_index = available_nums.index(cell_value)
+    # print(f"Cell value: {cell_value}")
+    if cell_value_index == len(available_nums) - 1:
+        board[cell[0],cell[1]] = 0
+        return (False, board)
+
     for num in available_nums[cell_value_index + 1:]:
-        # if available_nums.index(num) == len(available_nums) - 1: TESTING
-            # print(f"Last value: {board[cell[0],cell[1]]}") TESTING
         if check_cell_value(board, cell, num):
             board[cell[0],cell[1]] = num
-            # print(f"Value changed to: {board[cell[0],cell[1]]}") TESTING
+            # print(board)
             return (True, board)
         elif available_nums.index(num) == len(available_nums) - 1:
+            board[cell[0],cell[1]] = 0
             return (False, board)
-    # print(board) TESTING
 
 
 def solve(board, empty_cells):
     count = 0
     while count != len(empty_cells):
+        # print(count)
         result = update_cell(board, empty_cells[count])
         if result[0] == False:
             count -= 1
@@ -64,14 +125,15 @@ def solve(board, empty_cells):
             count += 1
 
 
-    return result[1]  # change this to board later
+    return result[1]
 
 
 def main():
-    board = np.array(BOARD)  # make a copy of the original board
-    empty_cells = find_empty_cells(board)
-    board = solve(board, empty_cells)
-    print(board)
+    for b in BOARDS:
+        board = np.array(b)  # make a copy of the original board
+        empty_cells = find_empty_cells(board)
+        board = solve(board, empty_cells)
+        print(board)
 
 
 if __name__ == "__main__":
@@ -79,10 +141,4 @@ if __name__ == "__main__":
 
 
 # Notes:
-# Write solving algorithm:
-    # Fill an empty cell with a number from available_nums
-    # Check that the number is legal
-    # Otherwise, try next number
-    # If all numbers in available_nums have tried and failed, backtrack:
-        # Go back to previous cell
-        # Try next number in available_nums
+# Fix issues with multiple backtracks
