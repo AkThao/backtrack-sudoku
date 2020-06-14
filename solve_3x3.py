@@ -2,7 +2,7 @@
 
 # Solve mini 3x3 version of Sudoku using the backtrack algorithm
 
-# NumPy makes it easier to work with 2D array
+# NumPy makes it easier to work with 2D arrays
 import numpy as np
 
 # Starting puzzles
