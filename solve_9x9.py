@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Sudoku solver using the backtrack algorithm
+# Solve 9x9 Sudoku using the backtrack algorithm
 
 # NumPy makes it easier to work with 2D arrays
 import numpy as np
