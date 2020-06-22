@@ -20,25 +20,26 @@ def check_rows_cols(board, cell, test_value):
     return False
 
 
-def check_subgrid(board, cell, test_value, subgrid_size):
+def check_subgrid(board, cell, test_value, subgrid_height, subgrid_width):
     """Return True if the given number is legal
         i.e. does not appear in the current subgrid
     Return False if the given number is illegal
     """
     # Find subgrid coordinates
-    subgrid_coords = ((cell[0] // subgrid_size) * subgrid_size,
-                      (cell[1] // subgrid_size) * subgrid_size)
+    # Map cell coordinates to top-left corner of subgrid
+    subgrid_coords = ((cell[0] // subgrid_height) * subgrid_height,
+                      (cell[1] // subgrid_width) * subgrid_width)
 
-    # Define subgrid
-    subgrid = board[subgrid_coords[0]:subgrid_coords[0]+subgrid_size,
-                    subgrid_coords[1]:subgrid_coords[1]+subgrid_size]
+    # Use that top-left corner to define subgrid
+    subgrid = board[subgrid_coords[0]:subgrid_coords[0]+subgrid_height,
+                    subgrid_coords[1]:subgrid_coords[1]+subgrid_width]
 
     if test_value not in subgrid:
         return True
     return False
 
 
-def update_cell(board, cell, available_nums, subgrid_size):
+def update_cell(board, cell, available_nums, subgrid_height, subgrid_width):
     """Try to update the current cell
     Return a two-tuple, with second element as the board
     First element is True if the cell was successfully updated
@@ -53,7 +54,7 @@ def update_cell(board, cell, available_nums, subgrid_size):
         board[cell[0], cell[1]] = 0
         return (False, board)
 
-    if subgrid_size == 0:  # Don't call check_subgrid if there aren't subgrids (e.g. 3x3 board)
+    if subgrid_height == 0:  # Don't call check_subgrid if there aren't subgrids (e.g. on a 3x3 board)
         # Check all numbers from the value of the current cell (the earlier numbers have already been checked)
         for num in available_nums[cell_value_index + 1:]:
             # If the number is legal, update the cell and move on
@@ -66,7 +67,7 @@ def update_cell(board, cell, available_nums, subgrid_size):
                 return (False, board)
     else:  # Call check_subgrid otherwise
         for num in available_nums[cell_value_index + 1:]:
-            if check_rows_cols(board, cell, num) and check_subgrid(board, cell, num, subgrid_size):
+            if check_rows_cols(board, cell, num) and check_subgrid(board, cell, num, subgrid_height, subgrid_width):
                 board[cell[0], cell[1]] = num
                 return (True, board)
             elif available_nums.index(num) == len(available_nums) - 1:
@@ -74,11 +75,17 @@ def update_cell(board, cell, available_nums, subgrid_size):
                 return (False, board)
 
 
-def solve(board, empty_cells, available_nums, subgrid_size):
+def solve(board, empty_cells, available_nums, subgrid_height, subgrid_width):
     """Perform the backtrack algorithm"""
     count = 0
     while count != len(empty_cells):
-        result = update_cell(board, empty_cells[count], available_nums, subgrid_size)
+        try:
+            result = update_cell(board, empty_cells[count], available_nums, subgrid_height, subgrid_width)
+        except IndexError:  # Subgrid dimensions might be wrong
+            return [0, 0]
+            # Could return None, but that gives a ValueError in main()
+            # The reason is that if solve() produces an array, then main() will need to compare None with an array
+            # So we just never return, instead we return a definitely incorrect array
         if result[0] is False:  # Cell was not updated, so backtrack
             count -= 1
         else:  # Cell was updated, so carry on to the next cell
@@ -87,9 +94,12 @@ def solve(board, empty_cells, available_nums, subgrid_size):
     return result[1]
 
 
-def main(BOARDS, available_nums, subgrid_size=0):
+def main(BOARDS, available_nums, subgrid_height=0, subgrid_width=0):
     for b in BOARDS:
         board = np.array(b)  # Make a copy of the original board
         empty_cells = find_empty_cells(board)
-        board = solve(board, empty_cells, available_nums, subgrid_size)
-        print(f"Solution:\n{board}\n")  # Solved puzzle
+        board = solve(board, empty_cells, available_nums, subgrid_height, subgrid_width)
+        if board == [0, 0]:
+            print("\nSudoku not solvable, check subgrid dimensions.\n")
+        else:
+            print(f"\nSolution:\n{board}\n")  # Solved puzzle

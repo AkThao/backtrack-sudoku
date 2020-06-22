@@ -148,12 +148,14 @@ BOARD_20 = [
 EASY_BOARDS = [BOARD_1, BOARD_2, BOARD_3, BOARD_4, BOARD_5, BOARD_6, BOARD_7, BOARD_8, BOARD_9, BOARD_10]
 HARD_BOARDS = [BOARD_11, BOARD_12, BOARD_13, BOARD_14, BOARD_15, BOARD_16, BOARD_17, BOARD_18, BOARD_19, BOARD_20]
 BOARD_SIZE = 4
-SUBGRID_SIZE = 2
+SUBGRID_HEIGHT = 2
+SUBGRID_WIDTH = 2
+
 
 # All possible numbers that can appear in the puzzle
 available_nums = list(range(BOARD_SIZE + 1))
 
 
 if __name__ == "__main__":
-    ss.main(EASY_BOARDS, available_nums)
-    ss.main(HARD_BOARDS, available_nums)
+    ss.main(EASY_BOARDS, available_nums, SUBGRID_HEIGHT, SUBGRID_WIDTH)
+    ss.main(HARD_BOARDS, available_nums, SUBGRID_HEIGHT, SUBGRID_WIDTH)
