@@ -157,5 +157,5 @@ available_nums = list(range(BOARD_SIZE + 1))
 
 
 if __name__ == "__main__":
-    ss.main(EASY_BOARDS, available_nums, SUBGRID_HEIGHT, SUBGRID_WIDTH)
-    ss.main(HARD_BOARDS, available_nums, SUBGRID_HEIGHT, SUBGRID_WIDTH)
+    for BOARD in EASY_BOARDS + HARD_BOARDS:
+        ss.main(BOARD, available_nums, SUBGRID_HEIGHT, SUBGRID_WIDTH)

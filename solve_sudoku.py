@@ -94,12 +94,11 @@ def solve(board, empty_cells, available_nums, subgrid_height, subgrid_width):
     return result[1]
 
 
-def main(BOARDS, available_nums, subgrid_height=0, subgrid_width=0):
-    for b in BOARDS:
-        board = np.array(b)  # Make a copy of the original board
-        empty_cells = find_empty_cells(board)
-        board = solve(board, empty_cells, available_nums, subgrid_height, subgrid_width)
-        if board == [0, 0]:
-            print("\nSudoku not solvable, check subgrid dimensions or numbers input onto board.\n")
-        else:
-            print(f"\nSolution:\n{board}\n")  # Solved puzzle
+def main(BOARD, available_nums, subgrid_height=0, subgrid_width=0):
+    board = np.array(BOARD)  # Make a copy of the original board
+    empty_cells = find_empty_cells(board)
+    board = solve(board, empty_cells, available_nums, subgrid_height, subgrid_width)
+    if board == [0, 0]:
+        print("\nSudoku not solvable, check subgrid dimensions or numbers input onto board.\n")
+    else:
+        print(f"\nSolution:\n{board}\n")  # Solved puzzle
