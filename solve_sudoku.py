@@ -100,6 +100,6 @@ def main(BOARDS, available_nums, subgrid_height=0, subgrid_width=0):
         empty_cells = find_empty_cells(board)
         board = solve(board, empty_cells, available_nums, subgrid_height, subgrid_width)
         if board == [0, 0]:
-            print("\nSudoku not solvable, check subgrid dimensions.\n")
+            print("\nSudoku not solvable, check subgrid dimensions or numbers input onto board.\n")
         else:
             print(f"\nSolution:\n{board}\n")  # Solved puzzle
