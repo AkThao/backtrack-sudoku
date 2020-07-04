@@ -1,6 +1,7 @@
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 
 import sys
+from PyQt5 import sip
 
 # Import QApplication and required widgets from PyQt5.QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QLabel, QFrame, QRadioButton
@@ -14,13 +15,13 @@ class Sudoku(QWidget):
         self.title = "Sudoku"
         self.width = 800
         self.height = 800
+        self.gridLayout = None
         self.initUI()
 
     def initUI(self):
         # Set some main window properties
         self.setWindowTitle(self.title)
         self.setFixedSize(self.width, self.height)
-        # self.createGrid()
         self.createMainWindow()
 
     def createMainWindow(self):
@@ -32,7 +33,6 @@ class Sudoku(QWidget):
 
         self.leftSide = QVBoxLayout()
         self.leftSide.addWidget(QLabel("Sudoku Game and Solver"))
-        self.leftSide.addWidget(QLabel("Board size:"))
 
         self.createRadioGroup()
         self.leftSide.addWidget(self.boardSizeChoice)
@@ -43,49 +43,59 @@ class Sudoku(QWidget):
     def createRadioGroup(self):
         self.boardSizeChoice = QWidget()
         self.boardSizeChoice.setFixedWidth(360)
+        self.boardSizeChoice.setFixedHeight(100)
+        self.boardSizeChoice.setStyleSheet("border: 1px dashed green")
+        self.boardSizes = QWidget()
 
-        self.radioLayout = QHBoxLayout()
+        self.radioLayout = QVBoxLayout()
+        self.radioGroup = QHBoxLayout()
 
         button3 = QRadioButton("3x3")
-        button3.toggled.connect(self.createGrid)
+        button3.toggled.connect(lambda: self.createGrid(3))
         button4 = QRadioButton("4x4")
-        button4.toggled.connect(self.createGrid)
+        button4.toggled.connect(lambda: self.createGrid(4))
         button6 = QRadioButton("6x6")
-        button6.toggled.connect(self.createGrid)
+        button6.toggled.connect(lambda: self.createGrid(6))
         button9 = QRadioButton("9x9")
-        button9.toggled.connect(self.createGrid)
+        button9.toggled.connect(lambda: self.createGrid(9))
 
-        self.radioLayout.addWidget(button3)
-        self.radioLayout.addWidget(button4)
-        self.radioLayout.addWidget(button6)
-        self.radioLayout.addWidget(button9)
+        self.radioGroup.addWidget(button3)
+        self.radioGroup.addWidget(button4)
+        self.radioGroup.addWidget(button6)
+        self.radioGroup.addWidget(button9)
+
+        self.boardSizes.setLayout(self.radioGroup)
+
+        self.radioLayout.addWidget(QLabel("Board size:"))
+        self.radioLayout.addWidget(self.boardSizes)
 
         self.boardSizeChoice.setLayout(self.radioLayout)
 
+    def clearLayout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget() is not None:
+                child.widget().deleteLater()
+            elif child.layout() is not None:
+                self.clearLayout(child.layout())
+        sip.delete(layout)
 
-    def createGrid(self):
-        gridLayout = QGridLayout()
+    def createGrid(self, board_size):
+        if self.gridLayout is not None:
+            self.clearLayout(self.gridLayout)
 
-        gridLayout.addWidget(QLineEdit("0"), 0, 0)
-        gridLayout.addWidget(QLineEdit("0"), 0, 1)
-        gridLayout.addWidget(QLineEdit("0"), 0, 2)
-        gridLayout.addWidget(QLineEdit("0"), 1, 0)
-        gridLayout.addWidget(QLineEdit("0"), 1, 1)
-        gridLayout.addWidget(QLineEdit("0"), 1, 2)
-        gridLayout.addWidget(QLineEdit("0"), 2, 0)
-        gridLayout.addWidget(QLineEdit("0"), 2, 1)
-        gridLayout.addWidget(QLineEdit("0"), 2, 2)
+        self.gridLayout = QGridLayout()
 
-        self.gridContainer.setLayout(gridLayout)
+        for i in range(board_size):
+            for j in range(board_size):
+                self.gridLayout.addWidget(QLineEdit("0"), i, j)
+        self.gridContainer.setLayout(self.gridLayout)
 
 
 def main():
     """Main function"""
     # Create an instance of QApplication
     sudoku_gui = QApplication(sys.argv)
-    # window = QWidget()
-    # window.setWindowTitle("Sudoku")
-    # window.show()
     sudoku = Sudoku()
     sudoku.show()
 
