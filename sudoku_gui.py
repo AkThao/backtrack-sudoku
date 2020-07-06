@@ -16,81 +16,84 @@ class Sudoku(QWidget):
         self.title = "Sudoku"
         self.width = 800
         self.height = 800
-        self.gridLayout = None
-        self.initUI()
+        self.grid_layout = None
+        self.init_UI()
 
-    def initUI(self):
+    def init_UI(self):
         # Set some main window properties
         self.setWindowTitle(self.title)
         self.setFixedSize(self.width, self.height)
-        self.createMainWindow()
+        self.create_main_window()
 
-    def createMainWindow(self):
-        self.mainWindow = QMainWindow()
-        self.gridContainer = QFrame()
-        self.gridContainer.setFixedWidth(360)
-        self.gridContainer.setFixedHeight(360)
-        self.gridContainer.setStyleSheet("border: 1px solid black")
+    def create_main_window(self):
+        self.main_window = QMainWindow()
+        self.grid_container = QFrame()
+        self.grid_container.setFixedWidth(360)
+        self.grid_container.setFixedHeight(360)
+        self.grid_container.setStyleSheet("border: 1px solid black")
 
-        self.leftSide = QVBoxLayout()
-        self.leftSide.addWidget(QLabel("Sudoku Game and Solver"))
+        self.left_side = QVBoxLayout()
+        self.left_side.addWidget(QLabel("Sudoku Game and Solver"))
 
-        self.createRadioGroup()
-        self.leftSide.addWidget(self.boardSizeChoice)
-        self.leftSide.addWidget(self.gridContainer)
+        self.create_radio_group()
+        self.left_side.addWidget(self.board_size_choice)
+        self.left_side.addWidget(self.grid_container)
 
-        self.setLayout(self.leftSide)
+        self.setLayout(self.left_side)
 
-    def createRadioGroup(self):
-        self.boardSizeChoice = QWidget()
-        self.boardSizeChoice.setFixedWidth(360)
-        self.boardSizeChoice.setFixedHeight(100)
-        self.boardSizeChoice.setStyleSheet("border: 1px dashed green")
-        self.boardSizes = QWidget()
+    def pick_random_board(self, board_size):
+        self.random_board
 
-        self.radioLayout = QVBoxLayout()
-        self.radioGroup = QHBoxLayout()
+    def create_radio_group(self):
+        self.board_size_choice = QWidget()
+        self.board_size_choice.setFixedWidth(360)
+        self.board_size_choice.setFixedHeight(100)
+        self.board_size_choice.setStyleSheet("border: 1px dashed green")
+        self.board_sizes = QWidget()
 
-        button3 = QRadioButton("3x3")
-        button3.toggled.connect(lambda: self.createGrid(3))
-        button4 = QRadioButton("4x4")
-        button4.toggled.connect(lambda: self.createGrid(4))
-        button6 = QRadioButton("6x6")
-        button6.toggled.connect(lambda: self.createGrid(6))
-        button9 = QRadioButton("9x9")
-        button9.toggled.connect(lambda: self.createGrid(9))
+        self.radio_layout = QVBoxLayout()
+        self.radio_group = QHBoxLayout()
 
-        self.radioGroup.addWidget(button3)
-        self.radioGroup.addWidget(button4)
-        self.radioGroup.addWidget(button6)
-        self.radioGroup.addWidget(button9)
+        button3 = QPushButton("3x3", self)
+        button3.clicked.connect(lambda: self.create_grid(3))
+        button4 = QPushButton("4x4", self)
+        button4.clicked.connect(lambda: self.create_grid(4))
+        button6 = QPushButton("6x6", self)
+        button6.clicked.connect(lambda: self.create_grid(6))
+        button9 = QPushButton("9x9", self)
+        button9.clicked.connect(lambda: self.create_grid(9))
 
-        self.boardSizes.setLayout(self.radioGroup)
+        self.radio_group.addWidget(button3)
+        self.radio_group.addWidget(button4)
+        self.radio_group.addWidget(button6)
+        self.radio_group.addWidget(button9)
 
-        self.radioLayout.addWidget(QLabel("Board size:"))
-        self.radioLayout.addWidget(self.boardSizes)
+        self.board_sizes.setLayout(self.radio_group)
 
-        self.boardSizeChoice.setLayout(self.radioLayout)
+        self.radio_layout.addWidget(QLabel("Board size:"))
+        self.radio_layout.addWidget(self.board_sizes)
 
-    def clearLayout(self, layout):
+        self.board_size_choice.setLayout(self.radio_layout)
+
+    def clear_layout(self, layout):
         while layout.count():
             child = layout.takeAt(0)
             if child.widget() is not None:
                 child.widget().deleteLater()
             elif child.layout() is not None:
-                self.clearLayout(child.layout())
+                self.clear_layout(child.layout())
         sip.delete(layout)
 
-    def createGrid(self, board_size):
-        if self.gridLayout is not None:
-            self.clearLayout(self.gridLayout)
+    def create_grid(self, board_size):
+        if self.grid_layout is not None:
+            self.clear_layout(self.grid_layout)
 
-        self.gridLayout = QGridLayout()
+        self.grid_layout = QGridLayout()
 
         for i in range(board_size):
             for j in range(board_size):
-                self.gridLayout.addWidget(QLineEdit("0"), i, j)
-        self.gridContainer.setLayout(self.gridLayout)
+                self.grid_layout.addWidget(QLineEdit("0"), i, j)
+        self.grid_container.setLayout(self.grid_layout)
 
 
 def main():
