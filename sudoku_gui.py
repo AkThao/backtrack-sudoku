@@ -3,6 +3,7 @@
 import sys
 from PyQt5 import sip
 import boards
+import random
 
 # Import QApplication and required widgets from PyQt5.QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QLabel, QFrame
@@ -19,6 +20,15 @@ class Sudoku(QWidget):
         self.height = 800
         self.grid_layout = None
         self.init_UI()
+        self.create_boards_lists()
+
+    def create_boards_lists(self):
+        self.boards_lists = {
+            3: boards.boards_3,
+            4: boards.boards_4,
+            6: boards.boards_6,
+            9: boards.boards_9
+        }
 
     def init_UI(self):
         # Set some main window properties
@@ -31,7 +41,6 @@ class Sudoku(QWidget):
         self.grid_container = QFrame()
         self.grid_container.setFixedWidth(400)
         self.grid_container.setFixedHeight(400)
-        self.grid_container.setStyleSheet("border: 1px solid black")
 
         self.left_side = QVBoxLayout()
         self.left_side.addWidget(QLabel("Sudoku Game and Solver"))
@@ -43,7 +52,9 @@ class Sudoku(QWidget):
         self.setLayout(self.left_side)
 
     def pick_random_board(self, board_size):
-        self.random_board
+        board_list = self.boards_lists[board_size]
+        random_board = random.choice(board_list)
+        self.create_grid(board_size, random_board)
 
     def create_button_group(self):
         self.board_size_choice = QWidget()
@@ -56,16 +67,16 @@ class Sudoku(QWidget):
 
         button3 = QPushButton("3x3", self)
         button3.setToolTip("Pick a random 3x3 grid")
-        button3.clicked.connect(lambda: self.create_grid(3))
+        button3.clicked.connect(lambda: self.pick_random_board(3))
         button4 = QPushButton("4x4", self)
         button4.setToolTip("Pick a random 4x4 grid")
-        button4.clicked.connect(lambda: self.create_grid(4))
+        button4.clicked.connect(lambda: self.pick_random_board(4))
         button6 = QPushButton("6x6", self)
         button6.setToolTip("Pick a random 6x6 grid")
-        button6.clicked.connect(lambda: self.create_grid(6))
+        button6.clicked.connect(lambda: self.pick_random_board(6))
         button9 = QPushButton("9x9", self)
         button9.setToolTip("Pick a random 9x9 grid")
-        button9.clicked.connect(lambda: self.create_grid(9))
+        button9.clicked.connect(lambda: self.pick_random_board(9))
 
         self.button_group.addWidget(button3)
         self.button_group.addWidget(button4)
@@ -88,7 +99,7 @@ class Sudoku(QWidget):
                 self.clear_layout(child.layout())
         sip.delete(layout)
 
-    def create_grid(self, board_size):
+    def create_grid(self, board_size, starting_board):
         if self.grid_layout is not None:
             self.clear_layout(self.grid_layout)
 
@@ -96,11 +107,12 @@ class Sudoku(QWidget):
 
         for i in range(board_size):
             for j in range(board_size):
-                cell = QLineEdit("0")
+                cell = QLineEdit(str(starting_board[i][j]))
                 cell.setFixedWidth(360/board_size)
                 cell.setFixedHeight(360/board_size)
                 cell.setAlignment(Qt.AlignCenter)
-                cell.setStyleSheet("padding: 0; margin: 0")
+                cell.setStyleSheet(
+                    "padding: 0; margin: 0; border: 1px solid black")
                 self.grid_layout.addWidget(cell, i, j)
 
         self.grid_layout.setSpacing(0)
