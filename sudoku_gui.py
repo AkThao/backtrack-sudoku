@@ -18,7 +18,6 @@ class Sudoku(QWidget):
         self.title = "Sudoku"
         self.width = 800
         self.height = 800
-        self.grid_layout = None
         self.init_UI()
         self.create_boards_lists()
 
@@ -41,6 +40,16 @@ class Sudoku(QWidget):
         self.grid_container = QFrame()
         self.grid_container.setFixedWidth(400)
         self.grid_container.setFixedHeight(400)
+        self.grid_container.setStyleSheet("border: 2px solid black")
+        self.grid_layout = QGridLayout()
+        self.placeholder_text = QLabel("Select a board size")
+        self.placeholder_text.setAlignment(Qt.AlignCenter)
+        self.placeholder_text.setStyleSheet("border: none")
+        self.placeholder_font = self.placeholder_text.font()
+        self.placeholder_font.setPointSize(40)
+        self.placeholder_text.setFont(self.placeholder_font)
+        self.grid_layout.addWidget(self.placeholder_text)
+        self.grid_container.setLayout(self.grid_layout)
 
         self.left_side = QVBoxLayout()
         self.left_side.addWidget(QLabel("Sudoku Game and Solver"))
@@ -100,8 +109,7 @@ class Sudoku(QWidget):
         sip.delete(layout)
 
     def create_grid(self, board_size, starting_board):
-        if self.grid_layout is not None:
-            self.clear_layout(self.grid_layout)
+        self.clear_layout(self.grid_layout)
 
         self.grid_layout = QGridLayout()
 
@@ -113,6 +121,11 @@ class Sudoku(QWidget):
                 cell.setAlignment(Qt.AlignCenter)
                 cell.setStyleSheet(
                     "padding: 0; margin: 0; border: 1px solid black")
+                if (starting_board[i][j] != 0):
+                    cell.setStyleSheet("background-color: rgb(255, 107, 107)")
+                cell_font = cell.font()
+                cell_font.setPointSize(cell.frameGeometry().width() / 2)
+                cell.setFont(cell_font)
                 self.grid_layout.addWidget(cell, i, j)
 
         self.grid_layout.setSpacing(0)
