@@ -2,6 +2,7 @@
 
 import sys
 from PyQt5 import sip
+import boards
 
 # Import QApplication and required widgets from PyQt5.QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QLabel, QFrame, QRadioButton
