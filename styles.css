@@ -1,0 +1,43 @@
+#board_size_button {
+  background-color: rgb(173, 184, 255);
+  border: 2px solid rgb(56, 77, 214);
+  border-radius: 5px;
+  height: 40px;
+  width: 75px;
+  font-size: 16px;
+}
+
+#board_size_button:hover {
+  background-color: cornflowerblue;
+  color: white;
+}
+
+#grid_container {
+  border: 2px solid black;
+}
+
+#placeholder_text {
+  border: none;
+}
+
+#title {
+  border: 1px solid black;
+  border-radius: 1em;
+  background-color: rgb(250, 255, 173);
+}
+
+#board_size_label {
+  font-weight: bold;
+}
+
+#empty_cell {
+  padding: 0;
+  margin: 0;
+  border: 1px solid black;
+}
+
+#prefilled_cell {
+  background-color: rgb(255, 107, 107);
+  border: 1px solid black;
+  color: black;
+}

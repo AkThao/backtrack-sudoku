@@ -12,6 +12,10 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtCore import Qt
 
 
+with open("styles.css") as file:
+    styles = file.read()
+
+
 class Sudoku(QWidget):
     def __init__(self):
         super().__init__()
@@ -40,19 +44,33 @@ class Sudoku(QWidget):
         self.grid_container = QFrame()
         self.grid_container.setFixedWidth(400)
         self.grid_container.setFixedHeight(400)
-        self.grid_container.setStyleSheet("border: 2px solid black")
+        self.grid_container.setObjectName("grid_container")
+        self.grid_container.setStyleSheet(styles)
         self.grid_layout = QGridLayout()
         self.placeholder_text = QLabel("Select a board size")
         self.placeholder_text.setAlignment(Qt.AlignCenter)
-        self.placeholder_text.setStyleSheet("border: none")
+        self.placeholder_text.setObjectName("placeholder_text")
+        self.placeholder_text.setStyleSheet(styles)
         self.placeholder_font = self.placeholder_text.font()
         self.placeholder_font.setPointSize(40)
         self.placeholder_text.setFont(self.placeholder_font)
         self.grid_layout.addWidget(self.placeholder_text)
         self.grid_container.setLayout(self.grid_layout)
 
+        # Create left side of GUI
         self.left_side = QVBoxLayout()
-        self.left_side.addWidget(QLabel("Sudoku Game and Solver"))
+
+        # Create and style title label
+        self.title = QLabel("Sudoku Game and Solver")
+        self.title.setFixedWidth(400)
+        self.title.setWordWrap(True)
+        self.title_font = self.title.font()
+        self.title_font.setPointSize(60)
+        self.title.setFont(self.title_font)
+        self.title.setAlignment(Qt.AlignCenter)
+        self.title.setObjectName("title")
+        self.title.setStyleSheet(styles)
+        self.left_side.addWidget(self.title)
 
         self.create_button_group()
         self.left_side.addWidget(self.board_size_choice)
@@ -68,7 +86,7 @@ class Sudoku(QWidget):
     def create_button_group(self):
         self.board_size_choice = QWidget()
         self.board_size_choice.setFixedWidth(360)
-        self.board_size_choice.setFixedHeight(100)
+        self.board_size_choice.setFixedHeight(120)
         self.board_sizes = QWidget()
 
         self.button_layout = QVBoxLayout()
@@ -77,15 +95,26 @@ class Sudoku(QWidget):
         button3 = QPushButton("3x3", self)
         button3.setToolTip("Pick a random 3x3 grid")
         button3.clicked.connect(lambda: self.pick_random_board(3))
+        button3.setObjectName("board_size_button")
+        button3.setStyleSheet(styles)
+
         button4 = QPushButton("4x4", self)
         button4.setToolTip("Pick a random 4x4 grid")
         button4.clicked.connect(lambda: self.pick_random_board(4))
+        button4.setObjectName("board_size_button")
+        button4.setStyleSheet(styles)
+
         button6 = QPushButton("6x6", self)
         button6.setToolTip("Pick a random 6x6 grid")
         button6.clicked.connect(lambda: self.pick_random_board(6))
+        button6.setObjectName("board_size_button")
+        button6.setStyleSheet(styles)
+
         button9 = QPushButton("9x9", self)
         button9.setToolTip("Pick a random 9x9 grid")
         button9.clicked.connect(lambda: self.pick_random_board(9))
+        button9.setObjectName("board_size_button")
+        button9.setStyleSheet(styles)
 
         self.button_group.addWidget(button3)
         self.button_group.addWidget(button4)
@@ -94,7 +123,13 @@ class Sudoku(QWidget):
 
         self.board_sizes.setLayout(self.button_group)
 
-        self.button_layout.addWidget(QLabel("Board size:"))
+        self.board_size_label = QLabel("Board size:")
+        self.board_size_font = self.board_size_label.font()
+        self.board_size_font.setPointSize(30)
+        self.board_size_label.setFont(self.board_size_font)
+        self.board_size_label.setObjectName("board_size_label")
+        self.board_size_label.setStyleSheet(styles)
+        self.button_layout.addWidget(self.board_size_label)
         self.button_layout.addWidget(self.board_sizes)
 
         self.board_size_choice.setLayout(self.button_layout)
@@ -119,10 +154,11 @@ class Sudoku(QWidget):
                 cell.setFixedWidth(360/board_size)
                 cell.setFixedHeight(360/board_size)
                 cell.setAlignment(Qt.AlignCenter)
-                cell.setStyleSheet(
-                    "padding: 0; margin: 0; border: 1px solid black")
+                cell.setObjectName("empty_cell")
+                cell.setStyleSheet(styles)
                 if (starting_board[i][j] != 0):
-                    cell.setStyleSheet("background-color: rgb(255, 107, 107)")
+                    cell.setObjectName("prefilled_cell")
+                    cell.setEnabled(False)
                 cell_font = cell.font()
                 cell_font.setPointSize(cell.frameGeometry().width() / 2)
                 cell.setFont(cell_font)
