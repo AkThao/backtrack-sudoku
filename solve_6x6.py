@@ -6,7 +6,7 @@ import solve_sudoku as ss
 from boards import boards_6
 
 # Import puzzles
-BOARDS = boards_6
+BOARDS = boards_6[0]
 BOARD_SIZE = 6
 SUBGRID_HEIGHT = 2
 SUBGRID_WIDTH = 3

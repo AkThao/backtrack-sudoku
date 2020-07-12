@@ -6,7 +6,7 @@ import solve_sudoku as ss
 from boards import boards_3
 
 # Import puzzles
-BOARDS = boards_3
+BOARDS = boards_3[0]
 BOARD_SIZE = 3
 
 # All possible numbers that can appear in the puzzle
