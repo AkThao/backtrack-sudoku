@@ -32,6 +32,7 @@ class SudokuCtrl:
         self.random_board = random.choice(self.board_list[0])
         self._view.create_grid(board_size, self.random_board)
         self._view.solve_button.setDisabled(False)
+        self._view.check_button.setDisabled(False)
 
     def solve_puzzle(self):
         self.result = self._solver.main(BOARD=self.random_board,
@@ -39,8 +40,19 @@ class SudokuCtrl:
             subgrid_height=self.board_list[2],
             subgrid_width=self.board_list[3])
 
-    def update_grid(self):
-        pass
+        self.get_empty_cells()
+        for cell in self.empty_cells:
+            self.update_cell(cell[0], cell[1], str(self.result[cell[0]][cell[1]]))
+
+    def update_cell(self, row, col, value):
+        self._view.grid_layout.itemAtPosition(row, col).widget().setText(value)
+        self._view.grid_layout.itemAtPosition(row, col).widget().setEnabled(False)
+        self._view.grid_layout.itemAtPosition(row, col).widget().setObjectName("solved_cell")
+        self._view.grid_layout.itemAtPosition(row, col).widget().setStyleSheet(self._view.styles)
+        self._view.grid_layout.itemAtPosition(row, col).widget().repaint()
+
+    def get_empty_cells(self):
+        self.empty_cells = self._solver.find_empty_cells(self.random_board)
 
     def _connect_signals(self):
         self._view.button3.clicked.connect(lambda: self.pick_random_board(3))
@@ -49,7 +61,6 @@ class SudokuCtrl:
         self._view.button9.clicked.connect(lambda: self.pick_random_board(9))
 
         self._view.solve_button.clicked.connect(self.solve_puzzle)
-
 
 
 def main():
@@ -70,4 +81,3 @@ if __name__ == "__main__":
 
 
 # TODO:
-# Update grid with solved puzzle

@@ -9,10 +9,6 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtCore import Qt
 
 
-with open("styles.css") as file:
-    styles = file.read()
-
-
 class SudokuUI(QWidget):
     def __init__(self):
         super().__init__()
@@ -25,6 +21,7 @@ class SudokuUI(QWidget):
         # Set some main window properties
         self.setWindowTitle(self.title)
         self.setFixedSize(self.width, self.height)
+        self.add_stylesheet()
         self.create_main_window()
 
     def create_main_window(self):
@@ -33,12 +30,12 @@ class SudokuUI(QWidget):
         self.grid_container.setFixedWidth(400)
         self.grid_container.setFixedHeight(400)
         self.grid_container.setObjectName("grid_container")
-        self.grid_container.setStyleSheet(styles)
+        self.grid_container.setStyleSheet(self.styles)
         self.grid_layout = QGridLayout()
         self.placeholder_text = QLabel("Select a board size")
         self.placeholder_text.setAlignment(Qt.AlignCenter)
         self.placeholder_text.setObjectName("placeholder_text")
-        self.placeholder_text.setStyleSheet(styles)
+        self.placeholder_text.setStyleSheet(self.styles)
         self.placeholder_font = self.placeholder_text.font()
         self.placeholder_font.setPointSize(40)
         self.placeholder_text.setFont(self.placeholder_font)
@@ -66,7 +63,7 @@ class SudokuUI(QWidget):
         self.title.setWordWrap(True)
         self.title.setAlignment(Qt.AlignCenter)
         self.title.setObjectName("title")
-        self.title.setStyleSheet(styles)
+        self.title.setStyleSheet(self.styles)
         self.left_side_layout.addWidget(self.title)
 
         # Add board size buttons and grid to left side
@@ -79,12 +76,17 @@ class SudokuUI(QWidget):
 
         self.setLayout(self.full_app)
 
+    def add_stylesheet(self):
+        with open("styles.css") as file:
+            self.styles = file.read()
+
     def create_check_and_solve_buttons(self):
         self.solve_button = QPushButton("SOLVE", self)
         self.check_button = QPushButton("CHECK SOLUTION", self)
         self.playthrough_button = QPushButton("PLAYTHROUGH", self)
 
         self.solve_button.setDisabled(True)
+        self.check_button.setDisabled(True)
 
         self.right_side_layout.addWidget(self.solve_button)
         self.right_side_layout.addWidget(self.check_button)
@@ -102,22 +104,22 @@ class SudokuUI(QWidget):
         self.button3 = QPushButton("3x3", self)
         self.button3.setToolTip("Pick a random 3x3 grid")
         self.button3.setObjectName("board_size_button")
-        self.button3.setStyleSheet(styles)
+        self.button3.setStyleSheet(self.styles)
 
         self.button4 = QPushButton("4x4", self)
         self.button4.setToolTip("Pick a random 4x4 grid")
         self.button4.setObjectName("board_size_button")
-        self.button4.setStyleSheet(styles)
+        self.button4.setStyleSheet(self.styles)
 
         self.button6 = QPushButton("6x6", self)
         self.button6.setToolTip("Pick a random 6x6 grid")
         self.button6.setObjectName("board_size_button")
-        self.button6.setStyleSheet(styles)
+        self.button6.setStyleSheet(self.styles)
 
         self.button9 = QPushButton("9x9", self)
         self.button9.setToolTip("Pick a random 9x9 grid")
         self.button9.setObjectName("board_size_button")
-        self.button9.setStyleSheet(styles)
+        self.button9.setStyleSheet(self.styles)
 
         self.button_group.addWidget(self.button3)
         self.button_group.addWidget(self.button4)
@@ -128,7 +130,7 @@ class SudokuUI(QWidget):
 
         self.board_size_label = QLabel("Board size:")
         self.board_size_label.setObjectName("board_size_label")
-        self.board_size_label.setStyleSheet(styles)
+        self.board_size_label.setStyleSheet(self.styles)
         self.button_layout.addWidget(self.board_size_label)
         self.button_layout.addWidget(self.board_sizes)
 
@@ -155,7 +157,7 @@ class SudokuUI(QWidget):
                 cell.setFixedHeight(360/board_size)
                 cell.setAlignment(Qt.AlignCenter)
                 cell.setObjectName("empty_cell")
-                cell.setStyleSheet(styles)
+                cell.setStyleSheet(self.styles)
                 if (starting_board[i][j] != 0):
                     cell.setObjectName("prefilled_cell")
                     cell.setEnabled(False)
