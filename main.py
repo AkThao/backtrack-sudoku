@@ -4,18 +4,62 @@
 
 import sudoku_gui
 import solve_sudoku
+import boards
+import sys
+import random
+
+from PyQt5.QtWidgets import QApplication
 
 
-BOARD = [
-    [2, 0, 0],
-    [0, 0, 1],
-    [0, 0, 0]
-]
+class SudokuCtrl:
+    def __init__(self, view, model):
+        self._view = view
+        self._solver = model
 
-BOARD_SIZE = 3
+        self._create_boards_lists()
+        self._connect_signals()
 
 
-available_nums = list(range(BOARD_SIZE + 1))
+    def _create_boards_lists(self):
+        self.boards_lists = {
+            3: boards.boards_3,
+            4: boards.boards_4,
+            6: boards.boards_6,
+            9: boards.boards_9
+        }
 
-solve_sudoku.main(BOARD, available_nums)
-sudoku_gui.main()
+    def pick_random_board(self, board_size):
+        self.board_list = self.boards_lists[board_size]
+        self.random_board = random.choice(self.board_list[0])
+        self._view.create_grid(board_size, self.random_board)
+
+    def _connect_signals(self):
+        self._view.button3.clicked.connect(lambda: self.pick_random_board(3))
+        self._view.button4.clicked.connect(lambda: self.pick_random_board(4))
+        self._view.button6.clicked.connect(lambda: self.pick_random_board(6))
+        self._view.button9.clicked.connect(lambda: self.pick_random_board(9))
+
+        self._view.solve_button.clicked.connect(lambda: self._solver.main(
+            BOARD=self.random_board,
+            available_nums=self.board_list[1],
+            subgrid_height=self.board_list[2],
+            subgrid_width=self.board_list[3]
+        ))
+
+
+
+def main():
+    backtrack_sudoku = QApplication(sys.argv)
+
+    view = sudoku_gui.SudokuUI()
+    view.show()
+
+    model = solve_sudoku
+
+    SudokuCtrl(view=view, model=model)
+
+    sys.exit(backtrack_sudoku.exec_())
+
+
+if __name__ == "__main__":
+    main()

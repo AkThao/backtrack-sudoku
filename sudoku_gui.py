@@ -1,9 +1,6 @@
 # !/usr/bin/env python3
 
-import sys
 from PyQt5 import sip
-import boards
-import random
 
 # Import QApplication and required widgets from PyQt5.QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QLabel, QFrame
@@ -16,22 +13,13 @@ with open("styles.css") as file:
     styles = file.read()
 
 
-class Sudoku(QWidget):
+class SudokuUI(QWidget):
     def __init__(self):
         super().__init__()
         self.title = "Sudoku"
         self.width = 800
         self.height = 800
         self.init_UI()
-        self.create_boards_lists()
-
-    def create_boards_lists(self):
-        self.boards_lists = {
-            3: boards.boards_3,
-            4: boards.boards_4,
-            6: boards.boards_6,
-            9: boards.boards_9
-        }
 
     def init_UI(self):
         # Set some main window properties
@@ -58,32 +46,49 @@ class Sudoku(QWidget):
         self.grid_container.setLayout(self.grid_layout)
 
         # Create left side of GUI
-        self.left_side = QVBoxLayout()
+        self.left_side = QWidget()
+        self.left_side_layout = QVBoxLayout()
+        self.left_side.setLayout(self.left_side_layout)
 
-        # Create and style title label
+        # Create right side of GUI
+        self.right_side = QWidget()
+        self.right_side_layout = QVBoxLayout()
+        self.right_side.setLayout(self.right_side_layout)
+
+        # Add left and right side to complete GUI
+        self.full_app = QHBoxLayout()
+        self.full_app.addWidget(self.left_side)
+        self.full_app.addWidget(self.right_side)
+
+        # Create and style title label and add to left side
         self.title = QLabel("Sudoku Game and Solver")
         self.title.setFixedWidth(400)
         self.title.setWordWrap(True)
-        self.title_font = self.title.font()
-        self.title_font.setPointSize(60)
-        self.title.setFont(self.title_font)
         self.title.setAlignment(Qt.AlignCenter)
         self.title.setObjectName("title")
         self.title.setStyleSheet(styles)
-        self.left_side.addWidget(self.title)
+        self.left_side_layout.addWidget(self.title)
 
-        self.create_button_group()
-        self.left_side.addWidget(self.board_size_choice)
-        self.left_side.addWidget(self.grid_container)
+        # Add board size buttons and grid to left side
+        self.create_board_size_button_group()
+        self.left_side_layout.addWidget(self.board_size_choice)
+        self.left_side_layout.addWidget(self.grid_container)
 
-        self.setLayout(self.left_side)
+        # Create solve button
+        self.create_check_and_solve_buttons()
 
-    def pick_random_board(self, board_size):
-        board_list = self.boards_lists[board_size]
-        random_board = random.choice(board_list)
-        self.create_grid(board_size, random_board)
+        self.setLayout(self.full_app)
 
-    def create_button_group(self):
+    def create_check_and_solve_buttons(self):
+        self.solve_button = QPushButton("SOLVE", self)
+        self.check_button = QPushButton("CHECK SOLUTION", self)
+        self.playthrough_button = QPushButton("PLAYTHROUGH", self)
+
+        self.right_side_layout.addWidget(self.solve_button)
+        self.right_side_layout.addWidget(self.check_button)
+        self.right_side_layout.addWidget(self.playthrough_button)
+
+    def create_board_size_button_group(self):
         self.board_size_choice = QWidget()
         self.board_size_choice.setFixedWidth(360)
         self.board_size_choice.setFixedHeight(120)
@@ -92,41 +97,34 @@ class Sudoku(QWidget):
         self.button_layout = QVBoxLayout()
         self.button_group = QHBoxLayout()
 
-        button3 = QPushButton("3x3", self)
-        button3.setToolTip("Pick a random 3x3 grid")
-        button3.clicked.connect(lambda: self.pick_random_board(3))
-        button3.setObjectName("board_size_button")
-        button3.setStyleSheet(styles)
+        self.button3 = QPushButton("3x3", self)
+        self.button3.setToolTip("Pick a random 3x3 grid")
+        self.button3.setObjectName("board_size_button")
+        self.button3.setStyleSheet(styles)
 
-        button4 = QPushButton("4x4", self)
-        button4.setToolTip("Pick a random 4x4 grid")
-        button4.clicked.connect(lambda: self.pick_random_board(4))
-        button4.setObjectName("board_size_button")
-        button4.setStyleSheet(styles)
+        self.button4 = QPushButton("4x4", self)
+        self.button4.setToolTip("Pick a random 4x4 grid")
+        self.button4.setObjectName("board_size_button")
+        self.button4.setStyleSheet(styles)
 
-        button6 = QPushButton("6x6", self)
-        button6.setToolTip("Pick a random 6x6 grid")
-        button6.clicked.connect(lambda: self.pick_random_board(6))
-        button6.setObjectName("board_size_button")
-        button6.setStyleSheet(styles)
+        self.button6 = QPushButton("6x6", self)
+        self.button6.setToolTip("Pick a random 6x6 grid")
+        self.button6.setObjectName("board_size_button")
+        self.button6.setStyleSheet(styles)
 
-        button9 = QPushButton("9x9", self)
-        button9.setToolTip("Pick a random 9x9 grid")
-        button9.clicked.connect(lambda: self.pick_random_board(9))
-        button9.setObjectName("board_size_button")
-        button9.setStyleSheet(styles)
+        self.button9 = QPushButton("9x9", self)
+        self.button9.setToolTip("Pick a random 9x9 grid")
+        self.button9.setObjectName("board_size_button")
+        self.button9.setStyleSheet(styles)
 
-        self.button_group.addWidget(button3)
-        self.button_group.addWidget(button4)
-        self.button_group.addWidget(button6)
-        self.button_group.addWidget(button9)
+        self.button_group.addWidget(self.button3)
+        self.button_group.addWidget(self.button4)
+        self.button_group.addWidget(self.button6)
+        self.button_group.addWidget(self.button9)
 
         self.board_sizes.setLayout(self.button_group)
 
         self.board_size_label = QLabel("Board size:")
-        self.board_size_font = self.board_size_label.font()
-        self.board_size_font.setPointSize(30)
-        self.board_size_label.setFont(self.board_size_font)
         self.board_size_label.setObjectName("board_size_label")
         self.board_size_label.setStyleSheet(styles)
         self.button_layout.addWidget(self.board_size_label)
@@ -167,18 +165,3 @@ class Sudoku(QWidget):
         self.grid_layout.setSpacing(0)
         self.grid_layout.setContentsMargins(0, 0, 0, 0)
         self.grid_container.setLayout(self.grid_layout)
-
-
-def main():
-    """Main function"""
-    # Create an instance of QApplication
-    sudoku_gui = QApplication(sys.argv)
-    sudoku = Sudoku()
-    sudoku.show()
-
-    # Execute main loop
-    sys.exit(sudoku_gui.exec_())
-
-
-if __name__ == "__main__":
-    main()
