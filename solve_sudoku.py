@@ -85,7 +85,7 @@ def solve(board, empty_cells, available_nums, subgrid_height, subgrid_width):
             return [0, 0]
             # Could return None, but that gives a ValueError in main()
             # The reason is that if solve() produces an array, then main() will need to compare None with an array
-            # So we just never return, instead we return a definitely incorrect array
+            # So we just never return None, instead we return a definitely incorrect array
         if result[0] is False:  # Cell was not updated, so backtrack
             count -= 1
         else:  # Cell was updated, so carry on to the next cell
@@ -101,4 +101,5 @@ def main(BOARD, available_nums, subgrid_height=0, subgrid_width=0):
     if board == [0, 0]:
         return "Sudoku not solvable, check subgrid dimensions or numbers input onto board"
     else:
+        board = [list(row) for row in board]  # Convert from NumPy array back to 2D Python list
         return board  # Solved puzzle
