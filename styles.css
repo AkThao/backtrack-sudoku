@@ -22,11 +22,13 @@
 
 #title {
   border: 1px solid black;
-  border-radius: 1em;
+  border-radius: 20px;
   background-color: rgb(250, 255, 173);
+  font-size: 40px;
 }
 
 #board_size_label {
+  font-size: 30px;
   font-weight: bold;
 }
 
@@ -37,7 +39,7 @@
 }
 
 #prefilled_cell {
-  background-color: rgb(255, 107, 107);
+  background-color: rgb(200, 200, 200);
   border: 1px solid black;
   color: black;
 }
