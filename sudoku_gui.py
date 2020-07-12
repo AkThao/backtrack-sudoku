@@ -84,6 +84,8 @@ class SudokuUI(QWidget):
         self.check_button = QPushButton("CHECK SOLUTION", self)
         self.playthrough_button = QPushButton("PLAYTHROUGH", self)
 
+        self.solve_button.setDisabled(True)
+
         self.right_side_layout.addWidget(self.solve_button)
         self.right_side_layout.addWidget(self.check_button)
         self.right_side_layout.addWidget(self.playthrough_button)

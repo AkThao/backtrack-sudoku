@@ -19,7 +19,6 @@ class SudokuCtrl:
         self._create_boards_lists()
         self._connect_signals()
 
-
     def _create_boards_lists(self):
         self.boards_lists = {
             3: boards.boards_3,
@@ -32,6 +31,16 @@ class SudokuCtrl:
         self.board_list = self.boards_lists[board_size]
         self.random_board = random.choice(self.board_list[0])
         self._view.create_grid(board_size, self.random_board)
+        self._view.solve_button.setDisabled(False)
+
+    def solve_puzzle(self):
+        self.result = self._solver.main(BOARD=self.random_board,
+            available_nums=self.board_list[1],
+            subgrid_height=self.board_list[2],
+            subgrid_width=self.board_list[3])
+
+    def update_grid(self):
+        pass
 
     def _connect_signals(self):
         self._view.button3.clicked.connect(lambda: self.pick_random_board(3))
@@ -39,12 +48,7 @@ class SudokuCtrl:
         self._view.button6.clicked.connect(lambda: self.pick_random_board(6))
         self._view.button9.clicked.connect(lambda: self.pick_random_board(9))
 
-        self._view.solve_button.clicked.connect(lambda: self._solver.main(
-            BOARD=self.random_board,
-            available_nums=self.board_list[1],
-            subgrid_height=self.board_list[2],
-            subgrid_width=self.board_list[3]
-        ))
+        self._view.solve_button.clicked.connect(self.solve_puzzle)
 
 
 
@@ -63,3 +67,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# TODO:
+# Update grid with solved puzzle
