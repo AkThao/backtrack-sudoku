@@ -15,4 +15,4 @@ available_nums = list(range(BOARD_SIZE + 1))
 
 if __name__ == "__main__":
     for BOARD in BOARDS:
-        ss.main(BOARD, available_nums)
+        print(ss.main(BOARD, available_nums))
