@@ -48,3 +48,13 @@
   color: steelblue;
   border: 1px solid black;
 }
+
+#correct_cell {
+  background-color: rgb(138, 255, 155);
+  border: 1px solid black;
+}
+
+#incorrect_cell {
+  background-color: rgb(255, 138, 138);
+  border: 1px solid black;
+}

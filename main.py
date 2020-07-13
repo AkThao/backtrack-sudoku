@@ -30,6 +30,7 @@ class SudokuCtrl:
     def pick_random_board(self, board_size):
         self.board_list = self.boards_lists[board_size]
         self.random_board = random.choice(self.board_list[0])
+        self.board_size = len(self.random_board)
         self._view.create_grid(board_size, self.random_board)
         self._view.solve_button.setDisabled(False)
         self._view.check_button.setDisabled(False)
@@ -40,9 +41,13 @@ class SudokuCtrl:
             subgrid_height=self.board_list[2],
             subgrid_width=self.board_list[3])
 
+    def show_answer(self):
+        self.solve_puzzle()
         self.get_empty_cells()
         for cell in self.empty_cells:
             self.update_cell(cell[0], cell[1], str(self.result[cell[0]][cell[1]]))
+
+        self._view.check_button.setDisabled(True)
 
     def update_cell(self, row, col, value):
         self._view.grid_layout.itemAtPosition(row, col).widget().setText(value)
@@ -54,10 +59,39 @@ class SudokuCtrl:
     def get_user_input(self):
         self.user_solution = []
 
-        for i in range(len(self.random_board)):
+        for i in range(self.board_size):
             self.user_solution.append([])
-            for j in range(len(self.random_board)):
+            for j in range(self.board_size):
                 self.user_solution[i].append(int(self._view.grid_layout.itemAtPosition(i, j).widget().text()))
+
+    def check_answer(self):
+        self.get_user_input()
+        self.solve_puzzle()
+        self.get_empty_cells()
+        # for i in range(self.board_size):
+        #     for j in range(self.board_size):
+        #         if (self.result[i][j] == self.user_solution[i][j]):
+        #             self._view.grid_layout.itemAtPosition(i, j).widget().setObjectName("correct_cell")
+        #             self._view.grid_layout.itemAtPosition(i, j).widget().setStyleSheet(self._view.styles)
+        #             self._view.grid_layout.itemAtPosition(i, j).widget().repaint()
+        #         else:
+        #             self._view.grid_layout.itemAtPosition(i, j).widget().setObjectName("incorrect_cell")
+        #             self._view.grid_layout.itemAtPosition(i, j).widget().setStyleSheet(self._view.styles)
+        #             self._view.grid_layout.itemAtPosition(i, j).widget().repaint()
+        #         self._view.grid_layout.itemAtPosition(i, j).widget().setEnabled(False)
+        for cell in self.empty_cells:
+            self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setEnabled(False)
+            if (self.result[cell[0]][cell[1]] == self.user_solution[cell[0]][cell[1]]):
+                    self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setObjectName("correct_cell")
+                    self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setStyleSheet(self._view.styles)
+                    self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().repaint()
+            else:
+                self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setObjectName("incorrect_cell")
+                self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setStyleSheet(self._view.styles)
+                self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().repaint()
+
+        self._view.solve_button.setDisabled(True)
+
 
     def get_empty_cells(self):
         self.empty_cells = self._solver.find_empty_cells(self.random_board)
@@ -68,9 +102,8 @@ class SudokuCtrl:
         self._view.button6.clicked.connect(lambda: self.pick_random_board(6))
         self._view.button9.clicked.connect(lambda: self.pick_random_board(9))
 
-        self._view.solve_button.clicked.connect(self.solve_puzzle)
-
-        self._view.check_button.clicked.connect(self.get_user_input)
+        self._view.solve_button.clicked.connect(self.show_answer)
+        self._view.check_button.clicked.connect(self.check_answer)
 
 
 def main():
@@ -91,5 +124,3 @@ if __name__ == "__main__":
 
 
 # TODO:
-# Get user input from board when check_button is pressed
-# Compare user input with solution
