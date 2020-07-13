@@ -51,6 +51,14 @@ class SudokuCtrl:
         self._view.grid_layout.itemAtPosition(row, col).widget().setStyleSheet(self._view.styles)
         self._view.grid_layout.itemAtPosition(row, col).widget().repaint()
 
+    def get_user_input(self):
+        self.user_solution = []
+
+        for i in range(len(self.random_board)):
+            self.user_solution.append([])
+            for j in range(len(self.random_board)):
+                self.user_solution[i].append(int(self._view.grid_layout.itemAtPosition(i, j).widget().text()))
+
     def get_empty_cells(self):
         self.empty_cells = self._solver.find_empty_cells(self.random_board)
 
@@ -61,6 +69,8 @@ class SudokuCtrl:
         self._view.button9.clicked.connect(lambda: self.pick_random_board(9))
 
         self._view.solve_button.clicked.connect(self.solve_puzzle)
+
+        self._view.check_button.clicked.connect(self.get_user_input)
 
 
 def main():
@@ -81,3 +91,5 @@ if __name__ == "__main__":
 
 
 # TODO:
+# Get user input from board when check_button is pressed
+# Compare user input with solution
