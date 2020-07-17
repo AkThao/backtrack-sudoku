@@ -64,7 +64,17 @@ def is_valid(board, test_value, row, col, subgrid_height, subgrid_width):
 
 
 def main(BOARD, board_size, subgrid_height=0, subgrid_width=0):
-    board = BOARD
+    # Make a copy of BOARD
+    # We can't use board = BOARD, because Python has no block scope and is pass-by-object
+    # This means that modifying the board variable here will modify the original
+    # Copying over each value solves this problem, though it may not be the most Pythonic way to do it
+    board = []
+    for i in range(board_size):
+        row = []
+        for j in range(board_size):
+            row.append(BOARD[i][j])
+        board.append(row)
+
     solve(board, board_size, subgrid_height, subgrid_width)
     return board
 
