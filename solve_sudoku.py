@@ -85,6 +85,7 @@ def solve(board, empty_cells, available_nums, subgrid_height, subgrid_width):
             return [0, 0]
             # Could return None, but that gives a ValueError in main()
             # The reason is that if solve() produces an array, then main() will need to compare None with an array
+            # This produces a ValueError
             # So we just never return None, instead we return a definitely incorrect array
         if result[0] is False:  # Cell was not updated, so backtrack
             count -= 1
