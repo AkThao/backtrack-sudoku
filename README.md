@@ -1,5 +1,5 @@
 # backtrack-sudoku
-## Sudoku Solver Using The Backtrack Algorithm
+Sudoku Solver Using The Backtrack Algorithm
 
 This project is about building an app that allows the user to try their hand at solving a range of sudoku puzzles of various sizes.
 
