@@ -3,14 +3,14 @@
 """ Sudoku Solver """
 
 import sudoku_gui
-import solve_sudoku
+import solve_sudoku_recursive
 import boards
 import sys
 import random
 
 from PyQt5.QtWidgets import QApplication
 
-__version__ = "0.1"
+__version__ = "0.2"
 __author__ = "Akaash Thao"
 
 
@@ -40,13 +40,13 @@ class SudokuCtrl:
 
     def solve_puzzle(self):
         self.result = self._solver.main(BOARD=self.board,
-            available_nums=self.board_list[1],
+            board_size=self.board_size,
             subgrid_height=self.board_list[2],
             subgrid_width=self.board_list[3])
 
     def show_answer(self):
-        self.solve_puzzle()
         self.get_empty_cells()
+        self.solve_puzzle()
         for cell in self.empty_cells:
             self.update_cell(cell[0], cell[1], str(self.result[cell[0]][cell[1]]))
 
@@ -70,8 +70,8 @@ class SudokuCtrl:
 
     def check_answer(self):
         self.get_user_input()
-        self.solve_puzzle()
         self.get_empty_cells()
+        self.solve_puzzle()
 
         for cell in self.empty_cells:
             self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setEnabled(False)
@@ -89,7 +89,7 @@ class SudokuCtrl:
 
 
     def get_empty_cells(self):
-        self.empty_cells = self._solver.find_empty_cells(self.board)
+        self.empty_cells = self._solver.return_list_of_empty_cells(self.board)
 
     def _connect_signals(self):
         self._view.button3.clicked.connect(lambda: self.pick_random_board(3))
@@ -107,7 +107,7 @@ def main():
     view = sudoku_gui.SudokuUI()
     view.show()
 
-    model = solve_sudoku
+    model = solve_sudoku_recursive
 
     SudokuCtrl(view=view, model=model)
 
