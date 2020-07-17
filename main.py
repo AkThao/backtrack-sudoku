@@ -10,6 +10,9 @@ import random
 
 from PyQt5.QtWidgets import QApplication
 
+__version__ = "0.1"
+__author__ = "Akaash Thao"
+
 
 class SudokuCtrl:
     def __init__(self, view, model):
@@ -29,14 +32,14 @@ class SudokuCtrl:
 
     def pick_random_board(self, board_size):
         self.board_list = self.boards_lists[board_size]
-        self.random_board = random.choice(self.board_list[0])
-        self.board_size = len(self.random_board)
-        self._view.create_grid(board_size, self.random_board)
+        self.board = random.choice(self.board_list[0])
+        self.board_size = len(self.board)
+        self._view.create_grid(board_size, self.board)
         self._view.solve_button.setDisabled(False)
         self._view.check_button.setDisabled(False)
 
     def solve_puzzle(self):
-        self.result = self._solver.main(BOARD=self.random_board,
+        self.result = self._solver.main(BOARD=self.board,
             available_nums=self.board_list[1],
             subgrid_height=self.board_list[2],
             subgrid_width=self.board_list[3])
@@ -47,6 +50,7 @@ class SudokuCtrl:
         for cell in self.empty_cells:
             self.update_cell(cell[0], cell[1], str(self.result[cell[0]][cell[1]]))
 
+        self._view.solve_button.setDisabled(True)
         self._view.check_button.setDisabled(True)
 
     def update_cell(self, row, col, value):
@@ -68,17 +72,7 @@ class SudokuCtrl:
         self.get_user_input()
         self.solve_puzzle()
         self.get_empty_cells()
-        # for i in range(self.board_size):
-        #     for j in range(self.board_size):
-        #         if (self.result[i][j] == self.user_solution[i][j]):
-        #             self._view.grid_layout.itemAtPosition(i, j).widget().setObjectName("correct_cell")
-        #             self._view.grid_layout.itemAtPosition(i, j).widget().setStyleSheet(self._view.styles)
-        #             self._view.grid_layout.itemAtPosition(i, j).widget().repaint()
-        #         else:
-        #             self._view.grid_layout.itemAtPosition(i, j).widget().setObjectName("incorrect_cell")
-        #             self._view.grid_layout.itemAtPosition(i, j).widget().setStyleSheet(self._view.styles)
-        #             self._view.grid_layout.itemAtPosition(i, j).widget().repaint()
-        #         self._view.grid_layout.itemAtPosition(i, j).widget().setEnabled(False)
+
         for cell in self.empty_cells:
             self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setEnabled(False)
             if (self.result[cell[0]][cell[1]] == self.user_solution[cell[0]][cell[1]]):
@@ -91,10 +85,11 @@ class SudokuCtrl:
                 self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().repaint()
 
         self._view.solve_button.setDisabled(True)
+        self._view.check_button.setDisabled(True)
 
 
     def get_empty_cells(self):
-        self.empty_cells = self._solver.find_empty_cells(self.random_board)
+        self.empty_cells = self._solver.find_empty_cells(self.board)
 
     def _connect_signals(self):
         self._view.button3.clicked.connect(lambda: self.pick_random_board(3))
