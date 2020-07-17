@@ -12,7 +12,6 @@ The user can try to solve the puzzle and check their solution, or simply ask the
 
 The project is built on the Model-View-Controller software design pattern, more information can be found here https://en.wikipedia.org/wiki/Model–view–controller
 
----
 
 ## Important scripts
 
