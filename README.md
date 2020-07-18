@@ -27,6 +27,6 @@ There are programs to test both algorithms on 3x3, 4x4, 6x6 and 9x9 boards, but 
 
 ## Dependencies
 ```
-Python >= 3.6
+Python3
 PyQt5
 ```
