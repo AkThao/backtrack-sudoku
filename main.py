@@ -7,8 +7,11 @@ import solve_sudoku_recursive
 import boards
 import sys
 import random
+import pickle
+import time
 
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QThread
 
 __version__ = "0.2"
 __author__ = "Akaash Thao"
@@ -39,16 +42,17 @@ class SudokuCtrl:
         self._view.check_button.setDisabled(False)
 
     def solve_puzzle(self):
+        self.get_empty_cells()
         self.result = self._solver.main(BOARD=self.board,
             board_size=self.board_size,
             subgrid_height=self.board_list[2],
             subgrid_width=self.board_list[3])
 
     def show_answer(self):
-        self.get_empty_cells()
         self.solve_puzzle()
         for cell in self.empty_cells:
             self.update_cell(cell[0], cell[1], str(self.result[cell[0]][cell[1]]))
+            self.change_cell_style(cell[0], cell[1], "solved_cell")
 
         self._view.solve_button.setDisabled(True)
         self._view.check_button.setDisabled(True)
@@ -56,7 +60,9 @@ class SudokuCtrl:
     def update_cell(self, row, col, value):
         self._view.grid_layout.itemAtPosition(row, col).widget().setText(value)
         self._view.grid_layout.itemAtPosition(row, col).widget().setEnabled(False)
-        self._view.grid_layout.itemAtPosition(row, col).widget().setObjectName("solved_cell")
+
+    def change_cell_style(self, row, col, cell_style):
+        self._view.grid_layout.itemAtPosition(row, col).widget().setObjectName(cell_style)
         self._view.grid_layout.itemAtPosition(row, col).widget().setStyleSheet(self._view.styles)
         self._view.grid_layout.itemAtPosition(row, col).widget().repaint()
 
@@ -70,23 +76,35 @@ class SudokuCtrl:
 
     def check_answer(self):
         self.get_user_input()
-        self.get_empty_cells()
         self.solve_puzzle()
 
         for cell in self.empty_cells:
             self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setEnabled(False)
             if (self.result[cell[0]][cell[1]] == self.user_solution[cell[0]][cell[1]]):
-                    self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setObjectName("correct_cell")
-                    self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setStyleSheet(self._view.styles)
-                    self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().repaint()
+                    self.change_cell_style(cell[0], cell[1], "correct_cell")
             else:
-                self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setObjectName("incorrect_cell")
-                self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setStyleSheet(self._view.styles)
-                self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().repaint()
+                self.change_cell_style(cell[0], cell[1], "incorrect_cell")
 
         self._view.solve_button.setDisabled(True)
         self._view.check_button.setDisabled(True)
 
+    def get_board_states(self):
+        self.solve_puzzle()
+        self.board_states = []
+        with open("board_states.txt", "rb") as fp:
+            while True:
+                try:
+                    self.board_states.append(pickle.load(fp))
+                except EOFError:
+                    break
+
+    def display_animation(self):
+        for state in self.board_states:
+            QThread.msleep(1)
+            for cell in self.empty_cells:
+                self.update_cell(cell[0], cell[1], str(state[cell[0]][cell[1]]))
+                self.change_cell_style(cell[0], cell[1], "solved_cell")
+            QApplication.processEvents()
 
     def get_empty_cells(self):
         self.empty_cells = self._solver.return_list_of_empty_cells(self.board)
@@ -99,6 +117,8 @@ class SudokuCtrl:
 
         self._view.solve_button.clicked.connect(self.show_answer)
         self._view.check_button.clicked.connect(self.check_answer)
+        self._view.playthrough_button.clicked.connect(self.get_board_states)
+        self._view.playthrough_button.clicked.connect(self.display_animation)
 
 
 def main():

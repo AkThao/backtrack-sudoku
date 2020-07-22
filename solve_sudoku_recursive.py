@@ -1,7 +1,7 @@
-import numpy as np
+import pickle
 
 
-def solve(board, board_size, subgrid_height, subgrid_width):
+def solve(board, board_size, subgrid_height, subgrid_width, output_file):
     empty_cell_found = find_empty_cell(board)
     # If algorithm has reached the end and the board is full, it must be solved
     if not empty_cell_found:
@@ -9,17 +9,17 @@ def solve(board, board_size, subgrid_height, subgrid_width):
     else:
         row, col = empty_cell_found
 
-    for i in range(1, board_size + 1):  # Available nums (1-9)
+    for i in range(1, board_size + 1):  # Available nums (1-9 for a 9x9 board)
         if is_valid(board, i, row, col, subgrid_height, subgrid_width):
             board[row][col] = i  # If a number works, put it in the board
+            pickle.dump(board, output_file)
 
-            if solve(board, board_size, subgrid_height, subgrid_width):  # Try to solve with the new board
+            if solve(board, board_size, subgrid_height, subgrid_width, output_file):  # Try to solve with the new board
                 return True
 
             board[row][col] = 0
 
     return False
-
 
 
 def return_list_of_empty_cells(board):
@@ -75,8 +75,7 @@ def main(BOARD, board_size, subgrid_height=0, subgrid_width=0):
             row.append(BOARD[i][j])
         board.append(row)
 
-    solve(board, board_size, subgrid_height, subgrid_width)
+    with open("board_states.txt", "wb") as file:
+        solve(board, board_size, subgrid_height, subgrid_width, file)
     return board
 
-if __name__ == "__main__":
-    main()
