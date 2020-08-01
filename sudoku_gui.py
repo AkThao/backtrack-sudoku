@@ -1,9 +1,10 @@
 # !/usr/bin/env python3
 
+from sys import exit as sysExit
 from PyQt5 import sip
 
 # Import QApplication and required widgets from PyQt5.QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QLabel, QFrame
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QLabel, QFrame, QSlider
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtCore import Qt
@@ -16,6 +17,12 @@ class SudokuUI(QWidget):
         self.width = 800
         self.height = 800
         self.init_UI()
+
+    def keyPressEvent(self, keyEvent):
+        super(SudokuUI, self).keyPressEvent(keyEvent)
+
+        if keyEvent.key() == Qt.Key_Q:
+            sysExit()
 
     def init_UI(self):
         # Set some main window properties
@@ -72,7 +79,7 @@ class SudokuUI(QWidget):
         self.left_side_layout.addWidget(self.grid_container)
 
         # Create solve button
-        self.create_check_and_solve_buttons()
+        self.create_right_side_buttons()
 
         self.setLayout(self.full_app)
 
@@ -80,10 +87,16 @@ class SudokuUI(QWidget):
         with open("styles.css") as file:
             self.styles = file.read()
 
-    def create_check_and_solve_buttons(self):
+    def create_right_side_buttons(self):
         self.solve_button = QPushButton("SOLVE", self)
         self.check_button = QPushButton("CHECK SOLUTION", self)
         self.playthrough_button = QPushButton("PLAYTHROUGH", self)
+        self.quit_button = QPushButton("Quit", self)
+        self.change_speed_slider = QSlider(Qt.Horizontal)
+        self.change_speed_slider.setMinimum(1)
+        self.change_speed_slider.setMaximum(1000)
+        self.change_speed_slider.setValue(1000)
+        self.change_speed_slider.setInvertedAppearance(True)
 
         self.solve_button.setDisabled(True)
         self.check_button.setDisabled(True)
@@ -92,6 +105,8 @@ class SudokuUI(QWidget):
         self.right_side_layout.addWidget(self.solve_button)
         self.right_side_layout.addWidget(self.check_button)
         self.right_side_layout.addWidget(self.playthrough_button)
+        self.right_side_layout.addWidget(self.quit_button)
+        self.right_side_layout.addWidget(self.change_speed_slider)
 
     def create_board_size_button_group(self):
         self.board_size_choice = QWidget()

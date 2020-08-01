@@ -5,7 +5,7 @@
 import sudoku_gui
 import solve_sudoku_recursive
 import boards
-import sys
+from sys import exit as sysExit
 import random
 import pickle
 import time
@@ -21,6 +21,8 @@ class SudokuCtrl:
     def __init__(self, view, model):
         self._view = view
         self._solver = model
+
+        self.animation_speed = 1000
 
         self._create_boards_lists()
         self._connect_signals()
@@ -52,9 +54,11 @@ class SudokuCtrl:
     def show_answer(self):
         self.solve_puzzle()
         for cell in self.empty_cells:
+            QThread.msleep(self.animation_speed)
             self.update_cell(cell[0], cell[1], str(
                 self.result[cell[0]][cell[1]]))
             self.change_cell_style(cell[0], cell[1], "solved_cell")
+            QApplication.processEvents()
 
         self._view.solve_button.setDisabled(True)
         self._view.check_button.setDisabled(True)
@@ -113,8 +117,10 @@ class SudokuCtrl:
         self._view.button6.setDisabled(True)
         self._view.button9.setDisabled(True)
 
-        for state in self.board_states:
-            QThread.msleep(1)
+        while len(self.board_states) > 0:
+            state = self.board_states[0]
+            del self.board_states[0]
+            QThread.msleep(self.animation_speed)
             for cell in self.empty_cells:
                 self.update_cell(cell[0], cell[1], str(
                     state[cell[0]][cell[1]]))
@@ -126,8 +132,14 @@ class SudokuCtrl:
         self._view.button6.setDisabled(False)
         self._view.button9.setDisabled(False)
 
+    def change_speed(self):
+        self.animation_speed = self._view.change_speed_slider.value()
+
     def get_empty_cells(self):
         self.empty_cells = self._solver.return_list_of_empty_cells(self.board)
+
+    def quit(self):
+        sysExit()
 
     def _connect_signals(self):
         self._view.button3.clicked.connect(lambda: self.pick_random_board(3))
@@ -139,10 +151,12 @@ class SudokuCtrl:
         self._view.check_button.clicked.connect(self.check_answer)
         self._view.playthrough_button.clicked.connect(self.get_board_states)
         self._view.playthrough_button.clicked.connect(self.display_animation)
+        self._view.quit_button.clicked.connect(self.quit)
+        self._view.change_speed_slider.valueChanged.connect(self.change_speed)
 
 
 def main():
-    backtrack_sudoku = QApplication(sys.argv)
+    backtrack_sudoku = QApplication([])
 
     view = sudoku_gui.SudokuUI()
     view.show()
@@ -151,7 +165,7 @@ def main():
 
     SudokuCtrl(view=view, model=model)
 
-    sys.exit(backtrack_sudoku.exec_())
+    sysExit(backtrack_sudoku.exec_())
 
 
 if __name__ == "__main__":
