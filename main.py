@@ -40,18 +40,20 @@ class SudokuCtrl:
         self._view.create_grid(board_size, self.board)
         self._view.solve_button.setDisabled(False)
         self._view.check_button.setDisabled(False)
+        self._view.playthrough_button.setDisabled(False)
 
     def solve_puzzle(self):
         self.get_empty_cells()
         self.result = self._solver.main(BOARD=self.board,
-            board_size=self.board_size,
-            subgrid_height=self.board_list[2],
-            subgrid_width=self.board_list[3])
+                                        board_size=self.board_size,
+                                        subgrid_height=self.board_list[2],
+                                        subgrid_width=self.board_list[3])
 
     def show_answer(self):
         self.solve_puzzle()
         for cell in self.empty_cells:
-            self.update_cell(cell[0], cell[1], str(self.result[cell[0]][cell[1]]))
+            self.update_cell(cell[0], cell[1], str(
+                self.result[cell[0]][cell[1]]))
             self.change_cell_style(cell[0], cell[1], "solved_cell")
 
         self._view.solve_button.setDisabled(True)
@@ -59,11 +61,14 @@ class SudokuCtrl:
 
     def update_cell(self, row, col, value):
         self._view.grid_layout.itemAtPosition(row, col).widget().setText(value)
-        self._view.grid_layout.itemAtPosition(row, col).widget().setEnabled(False)
+        self._view.grid_layout.itemAtPosition(
+            row, col).widget().setEnabled(False)
 
     def change_cell_style(self, row, col, cell_style):
-        self._view.grid_layout.itemAtPosition(row, col).widget().setObjectName(cell_style)
-        self._view.grid_layout.itemAtPosition(row, col).widget().setStyleSheet(self._view.styles)
+        self._view.grid_layout.itemAtPosition(
+            row, col).widget().setObjectName(cell_style)
+        self._view.grid_layout.itemAtPosition(
+            row, col).widget().setStyleSheet(self._view.styles)
         self._view.grid_layout.itemAtPosition(row, col).widget().repaint()
 
     def get_user_input(self):
@@ -72,16 +77,18 @@ class SudokuCtrl:
         for i in range(self.board_size):
             self.user_solution.append([])
             for j in range(self.board_size):
-                self.user_solution[i].append(int(self._view.grid_layout.itemAtPosition(i, j).widget().text()))
+                self.user_solution[i].append(
+                    int(self._view.grid_layout.itemAtPosition(i, j).widget().text()))
 
     def check_answer(self):
         self.get_user_input()
         self.solve_puzzle()
 
         for cell in self.empty_cells:
-            self._view.grid_layout.itemAtPosition(cell[0], cell[1]).widget().setEnabled(False)
+            self._view.grid_layout.itemAtPosition(
+                cell[0], cell[1]).widget().setEnabled(False)
             if (self.result[cell[0]][cell[1]] == self.user_solution[cell[0]][cell[1]]):
-                    self.change_cell_style(cell[0], cell[1], "correct_cell")
+                self.change_cell_style(cell[0], cell[1], "correct_cell")
             else:
                 self.change_cell_style(cell[0], cell[1], "incorrect_cell")
 
@@ -99,12 +106,25 @@ class SudokuCtrl:
                     break
 
     def display_animation(self):
+        self._view.solve_button.setDisabled(True)
+        self._view.check_button.setDisabled(True)
+        self._view.button3.setDisabled(True)
+        self._view.button4.setDisabled(True)
+        self._view.button6.setDisabled(True)
+        self._view.button9.setDisabled(True)
+
         for state in self.board_states:
             QThread.msleep(1)
             for cell in self.empty_cells:
-                self.update_cell(cell[0], cell[1], str(state[cell[0]][cell[1]]))
+                self.update_cell(cell[0], cell[1], str(
+                    state[cell[0]][cell[1]]))
                 self.change_cell_style(cell[0], cell[1], "solved_cell")
             QApplication.processEvents()
+
+        self._view.button3.setDisabled(False)
+        self._view.button4.setDisabled(False)
+        self._view.button6.setDisabled(False)
+        self._view.button9.setDisabled(False)
 
     def get_empty_cells(self):
         self.empty_cells = self._solver.return_list_of_empty_cells(self.board)
