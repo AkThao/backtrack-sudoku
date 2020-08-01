@@ -16,7 +16,7 @@ The user can try to solve the puzzle and check their solution, or simply ask the
 
 `solve_sudoku_recursive.py` is a newer and faster backtrack algorithm that uses recursion.
 
-`sudoku_gui.py` contains all the code necessary to produce the GUI.
+`sudoku_gui.py` contains all the code for the GUI.
 
 `main.py` is the controller that connects the model (solver) and the view (GUI).
 
