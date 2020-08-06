@@ -4,10 +4,27 @@ from sys import exit as sysExit
 from PyQt5 import sip
 
 # Import QApplication and required widgets from PyQt5.QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QLabel, QFrame, QSlider
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QLabel, QFrame, QSlider, QDialog, QDialogButtonBox
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtCore import Qt
+
+
+class ErrorDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Playthrough not running error")
+        self.setFixedSize(400, 200)
+        self.layout = QVBoxLayout()
+        self.text = QLabel("Playthrough not running\nNothing to pause")
+        self.button_box = QDialogButtonBox(QDialogButtonBox.Close)
+        self.button_box.clicked.connect(self.closeEvent)
+        self.layout.addWidget(self.text)
+        self.layout.addWidget(self.button_box)
+        self.setLayout(self.layout)
+
+    def closeEvent(self, event):
+        self.done(0)
 
 
 class SudokuUI(QWidget):
@@ -30,6 +47,10 @@ class SudokuUI(QWidget):
         self.setFixedSize(self.width, self.height)
         self.add_stylesheet()
         self.create_main_window()
+        self.create_error_dialogs()
+
+    def create_error_dialogs(self):
+        self.error_dialog = ErrorDialog()
 
     def create_main_window(self):
         self.main_window = QMainWindow()
@@ -91,12 +112,12 @@ class SudokuUI(QWidget):
         self.solve_button = QPushButton("SOLVE", self)
         self.check_button = QPushButton("CHECK SOLUTION", self)
         self.playthrough_button = QPushButton("PLAYTHROUGH", self)
+        self.pause_button = QPushButton("PAUSE", self)
         self.quit_button = QPushButton("Quit", self)
         self.change_speed_slider = QSlider(Qt.Horizontal)
         self.change_speed_slider.setMinimum(1)
         self.change_speed_slider.setMaximum(1000)
-        self.change_speed_slider.setValue(1000)
-        self.change_speed_slider.setInvertedAppearance(True)
+        self.change_speed_slider.setValue(1)
 
         self.solve_button.setDisabled(True)
         self.check_button.setDisabled(True)
@@ -105,6 +126,7 @@ class SudokuUI(QWidget):
         self.right_side_layout.addWidget(self.solve_button)
         self.right_side_layout.addWidget(self.check_button)
         self.right_side_layout.addWidget(self.playthrough_button)
+        self.right_side_layout.addWidget(self.pause_button)
         self.right_side_layout.addWidget(self.quit_button)
         self.right_side_layout.addWidget(self.change_speed_slider)
 

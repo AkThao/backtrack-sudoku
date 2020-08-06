@@ -22,7 +22,7 @@ class SudokuCtrl:
         self._view = view
         self._solver = model
 
-        self.animation_speed = 1000
+        self.animation_speed = 1
 
         self._create_boards_lists()
         self._connect_signals()
@@ -53,12 +53,13 @@ class SudokuCtrl:
 
     def show_answer(self):
         self.solve_puzzle()
+        QApplication.processEvents()
         for cell in self.empty_cells:
-            QThread.msleep(self.animation_speed)
             self.update_cell(cell[0], cell[1], str(
                 self.result[cell[0]][cell[1]]))
             self.change_cell_style(cell[0], cell[1], "solved_cell")
             QApplication.processEvents()
+            QThread.msleep(self.animation_speed)
 
         self._view.solve_button.setDisabled(True)
         self._view.check_button.setDisabled(True)
@@ -117,20 +118,32 @@ class SudokuCtrl:
         self._view.button6.setDisabled(True)
         self._view.button9.setDisabled(True)
 
+        QApplication.processEvents()
         while len(self.board_states) > 0:
             state = self.board_states[0]
             del self.board_states[0]
-            QThread.msleep(self.animation_speed)
             for cell in self.empty_cells:
                 self.update_cell(cell[0], cell[1], str(
                     state[cell[0]][cell[1]]))
                 self.change_cell_style(cell[0], cell[1], "solved_cell")
             QApplication.processEvents()
+            QThread.msleep(self.animation_speed)
 
         self._view.button3.setDisabled(False)
         self._view.button4.setDisabled(False)
         self._view.button6.setDisabled(False)
         self._view.button9.setDisabled(False)
+
+    def pause_animation(self):
+        try:
+            tmp = self.board_states
+            self.board_states = []
+            self._view.playthrough_button.setDisabled(True)
+            self._view.pause_button.setText("CONTINUE")
+            self._view.pause_button.repaint()
+            QApplication.processEvents()
+        except AttributeError:
+            self._view.error_dialog.exec_()
 
     def change_speed(self):
         self.animation_speed = self._view.change_speed_slider.value()
@@ -151,8 +164,10 @@ class SudokuCtrl:
         self._view.check_button.clicked.connect(self.check_answer)
         self._view.playthrough_button.clicked.connect(self.get_board_states)
         self._view.playthrough_button.clicked.connect(self.display_animation)
+        self._view.pause_button.clicked.connect(self.pause_animation)
         self._view.quit_button.clicked.connect(self.quit)
         self._view.change_speed_slider.valueChanged.connect(self.change_speed)
+        # self._view.error_dialog_button_box.accepted.connect(self.quit)
 
 
 def main():
