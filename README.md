@@ -30,6 +30,6 @@ PyQt5
 
 ## Potential future improvements
 
-Add a stepper so the user can take a closer look at the solving algorithm by stepping forward through each iteration or running it back in time. Difficulty = Easy.
+Add a stepper so the user can take a closer look at the solving algorithm by stepping forward through each iteration or running it back in time.
 
-Add some heuristics to speed up/vary the solving algorithm, so it's not purely backtracking. Difficulty = Hard.
+Add some heuristics to speed up/vary the solving algorithm, so it's not purely backtracking.
