@@ -27,3 +27,9 @@ There are programs to test both algorithms on 3x3, 4x4, 6x6 and 9x9 boards, but 
 Python3
 PyQt5
 ```
+
+## Potential future improvements
+
+Add a stepper so the user can take a closer look at the solving algorithm by stepping forward through each iteration or running it back in time. Difficulty = Easy.
+
+Add some heuristics to speed up/vary the solving algorithm, so it's not purely backtracking. Difficulty = Hard.
