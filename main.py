@@ -23,6 +23,8 @@ class SudokuCtrl:
         self._solver = model
 
         self.animation_speed = 1
+        self.temp_board_states = []
+        self.is_animating = False
 
         self._create_boards_lists()
         self._connect_signals()
@@ -43,6 +45,11 @@ class SudokuCtrl:
         self._view.solve_button.setDisabled(False)
         self._view.check_button.setDisabled(False)
         self._view.playthrough_button.setDisabled(False)
+        self._view.pause_button.setText("PAUSE")
+        self._view.pause_button.repaint()
+        self._view.pause_button.clicked.disconnect()
+        self._view.pause_button.clicked.connect(self.pause_animation)
+        self.temp_board_states = []
 
     def solve_puzzle(self):
         self.get_empty_cells()
@@ -117,6 +124,7 @@ class SudokuCtrl:
         self._view.button4.setDisabled(True)
         self._view.button6.setDisabled(True)
         self._view.button9.setDisabled(True)
+        self.is_animating = True
 
         QApplication.processEvents()
         while len(self.board_states) > 0:
@@ -133,17 +141,28 @@ class SudokuCtrl:
         self._view.button4.setDisabled(False)
         self._view.button6.setDisabled(False)
         self._view.button9.setDisabled(False)
+        self.is_animating = False
 
     def pause_animation(self):
-        try:
-            tmp = self.board_states
-            self.board_states = []
+        if self.is_animating:
+            self.temp_board_states, self.board_states = self.board_states, []
             self._view.playthrough_button.setDisabled(True)
             self._view.pause_button.setText("CONTINUE")
             self._view.pause_button.repaint()
+            self._view.pause_button.clicked.disconnect()
+            self._view.pause_button.clicked.connect(self.continue_animation)
             QApplication.processEvents()
-        except AttributeError:
+        else:
             self._view.error_dialog.exec_()
+
+    def continue_animation(self):
+        self.board_states = self.temp_board_states
+        self._view.pause_button.setText("PAUSE")
+        self._view.pause_button.repaint()
+        self._view.pause_button.clicked.disconnect()
+        self._view.pause_button.clicked.connect(self.pause_animation)
+        QApplication.processEvents()
+        self.display_animation()
 
     def change_speed(self):
         self.animation_speed = self._view.change_speed_slider.value()
