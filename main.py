@@ -83,14 +83,16 @@ class SudokuCtrl:
             row, col).widget().setStyleSheet(self._view.styles)
         self._view.grid_layout.itemAtPosition(row, col).widget().repaint()
 
+    def get_cell(self, row, col):
+        return int(self._view.grid_layout.itemAtPosition(row, col).widget().text())
+
     def get_user_input(self):
         self.user_solution = []
 
         for i in range(self.board_size):
             self.user_solution.append([])
             for j in range(self.board_size):
-                self.user_solution[i].append(
-                    int(self._view.grid_layout.itemAtPosition(i, j).widget().text()))
+                self.user_solution[i].append(self.get_cell(i, j))
 
     def check_answer(self):
         self.get_user_input()
@@ -117,7 +119,7 @@ class SudokuCtrl:
                 except EOFError:
                     break
 
-    def display_animation(self):
+    def run_animation(self):
         self._view.solve_button.setDisabled(True)
         self._view.check_button.setDisabled(True)
         self._view.button3.setDisabled(True)
@@ -131,11 +133,22 @@ class SudokuCtrl:
             state = self.board_states[0]
             del self.board_states[0]
             for cell in self.empty_cells:
+                previous_cell_value = self.get_cell(cell[0], cell[1])
+                new_cell_value = state[cell[0]][cell[1]]
                 self.update_cell(cell[0], cell[1], str(
                     state[cell[0]][cell[1]]))
-                self.change_cell_style(cell[0], cell[1], "solved_cell")
+                if new_cell_value == 0:
+                    self.change_cell_style(cell[0], cell[1], "incorrect_cell")
+                elif new_cell_value == previous_cell_value:
+                    self.change_cell_style(cell[0], cell[1], "solved_cell")
+                else:
+                    self.change_cell_style(cell[0], cell[1], "correct_cell")
             QApplication.processEvents()
             QThread.msleep(self.animation_speed)
+
+            if self.is_animating:
+                for cell in self.empty_cells:
+                    self.change_cell_style(cell[0], cell[1], "correct_cell")
 
         self._view.button3.setDisabled(False)
         self._view.button4.setDisabled(False)
@@ -145,6 +158,7 @@ class SudokuCtrl:
 
     def pause_animation(self):
         if self.is_animating:
+            self.is_animating = False
             self.temp_board_states, self.board_states = self.board_states, []
             self._view.playthrough_button.setDisabled(True)
             self._view.pause_button.setText("CONTINUE")
@@ -162,7 +176,7 @@ class SudokuCtrl:
         self._view.pause_button.clicked.disconnect()
         self._view.pause_button.clicked.connect(self.pause_animation)
         QApplication.processEvents()
-        self.display_animation()
+        self.run_animation()
 
     def change_speed(self):
         self.animation_speed = self._view.change_speed_slider.value()
@@ -182,11 +196,10 @@ class SudokuCtrl:
         self._view.solve_button.clicked.connect(self.show_answer)
         self._view.check_button.clicked.connect(self.check_answer)
         self._view.playthrough_button.clicked.connect(self.get_board_states)
-        self._view.playthrough_button.clicked.connect(self.display_animation)
+        self._view.playthrough_button.clicked.connect(self.run_animation)
         self._view.pause_button.clicked.connect(self.pause_animation)
         self._view.quit_button.clicked.connect(self.quit)
         self._view.change_speed_slider.valueChanged.connect(self.change_speed)
-        # self._view.error_dialog_button_box.accepted.connect(self.quit)
 
 
 def main():
@@ -207,3 +220,6 @@ if __name__ == "__main__":
 
 
 # TODO:
+# Colour coding playthrough board states
+# Add functionality for user to enter their own board
+# Add comments to code
