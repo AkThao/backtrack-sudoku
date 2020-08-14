@@ -13,7 +13,7 @@ import time
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QThread, QObject
 
-__version__ = "0.2"
+__version__ = "0.3"
 __author__ = "Akaash Thao"
 
 
@@ -54,7 +54,8 @@ class SudokuCtrl:
         self._view.solve_button.setDisabled(False)
         self._view.check_button.setDisabled(False)
         self._view.playthrough_button.setDisabled(False)
-        self._view.pause_button.setText("PAUSE")
+        self._view.change_speed_slider.setDisabled(False)
+        self._view.pause_button.setText("Pause")
         self._view.pause_button.repaint()
         self._view.pause_button.clicked.disconnect()
         self._view.pause_button.clicked.connect(self.pause_animation)
@@ -71,6 +72,8 @@ class SudokuCtrl:
     def show_answer(self):
         """Solve the current puzzle and display the solution with animation"""
         self.solve_puzzle()
+        self._view.solve_button.setDisabled(True)
+        self._view.check_button.setDisabled(True)
         QApplication.processEvents()
         for cell in self.empty_cells:
             self.update_cell(cell[0], cell[1], str(
@@ -78,9 +81,6 @@ class SudokuCtrl:
             self.change_cell_style(cell[0], cell[1], "solved_cell")
             QApplication.processEvents()
             QThread.msleep(self.animation_speed)
-
-        self._view.solve_button.setDisabled(True)
-        self._view.check_button.setDisabled(True)
 
     def update_cell(self, row, col, value):
         """Update cell at [row, col] to show 'value'"""
@@ -116,6 +116,10 @@ class SudokuCtrl:
         self.get_user_input()
         self.solve_puzzle()
 
+        # No need to solve/check twice
+        self._view.solve_button.setDisabled(True)
+        self._view.check_button.setDisabled(True)
+
         for cell in self.empty_cells:
             self._view.grid_layout.itemAtPosition(
                 cell[0], cell[1]).widget().setEnabled(False)
@@ -123,10 +127,6 @@ class SudokuCtrl:
                 self.change_cell_style(cell[0], cell[1], "correct_cell")
             else:
                 self.change_cell_style(cell[0], cell[1], "incorrect_cell")
-
-        # No need to solve/check twice
-        self._view.solve_button.setDisabled(True)
-        self._view.check_button.setDisabled(True)
 
     def get_board_states(self):
         """Retrieve current puzzle's solution, saved to file by solver"""
@@ -146,7 +146,10 @@ class SudokuCtrl:
         self._view.check_button.setDisabled(True)
         self._view.button3.setDisabled(True)
         self._view.button4.setDisabled(True)
+        self._view.button5.setDisabled(True)
         self._view.button6.setDisabled(True)
+        self._view.button7.setDisabled(True)
+        self._view.button8.setDisabled(True)
         self._view.button9.setDisabled(True)
 
         # Chosen to disable the slider during animation for now
@@ -158,7 +161,7 @@ class SudokuCtrl:
         # Used to control pausing/resuming of the animation
         self.is_animating = True
 
-        self._view.pause_button.setText("PAUSE")
+        self._view.pause_button.setText("Pause")
         self._view.pause_button.repaint()
         self._view.pause_button.clicked.disconnect()
         self._view.pause_button.clicked.connect(self.pause_animation)
@@ -190,8 +193,12 @@ class SudokuCtrl:
         # Re-enable buttons now that animation has finished
         self._view.button3.setDisabled(False)
         self._view.button4.setDisabled(False)
+        self._view.button5.setDisabled(False)
         self._view.button6.setDisabled(False)
+        self._view.button7.setDisabled(False)
+        self._view.button8.setDisabled(False)
         self._view.button9.setDisabled(False)
+        self._view.change_speed_slider.setDisabled(False)
         self.is_animating = False
 
     def pause_animation(self):
@@ -202,7 +209,7 @@ class SudokuCtrl:
             # The animation is "paused" by emptying the board_states list so the while loop in self.run_animation stops
             self.temp_board_states, self.board_states = self.board_states, []
             # Change the pause button to a continue button
-            self._view.pause_button.setText("CONTINUE")
+            self._view.pause_button.setText("Continue")
             self._view.pause_button.repaint()
             self._view.pause_button.clicked.disconnect()
             self._view.pause_button.clicked.connect(self.continue_animation)
@@ -218,7 +225,7 @@ class SudokuCtrl:
         # Refill the board_states list and "resume" the while loop in self.run_animation from where it left off
         self.board_states = self.temp_board_states
         # Change the continue button to a pause button
-        self._view.pause_button.setText("PAUSE")
+        self._view.pause_button.setText("Pause")
         self._view.pause_button.repaint()
         self._view.pause_button.clicked.disconnect()
         self._view.pause_button.clicked.connect(self.pause_animation)
@@ -241,7 +248,10 @@ class SudokuCtrl:
         """Set up controller interface by connecting signals from GUI components to relevant slots"""
         self._view.button3.clicked.connect(lambda: self.pick_random_board(3))
         self._view.button4.clicked.connect(lambda: self.pick_random_board(4))
+        # self._view.button5.clicked.connect(lambda: self.pick_random_board(5))
         self._view.button6.clicked.connect(lambda: self.pick_random_board(6))
+        # self._view.button7.clicked.connect(lambda: self.pick_random_board(7))
+        # self._view.button8.clicked.connect(lambda: self.pick_random_board(8))
         self._view.button9.clicked.connect(lambda: self.pick_random_board(9))
 
         self._view.solve_button.clicked.connect(self.show_answer)

@@ -1,18 +1,18 @@
-#board_size_button {
+#button {
   background-color: rgb(173, 184, 255);
   border: 2px solid rgb(56, 77, 214);
   border-radius: 5px;
-  height: 40px;
-  width: 75px;
+  height: 30px;
   font-size: 16px;
+  margin: 0 auto;
 }
 
-#board_size_button:hover {
+#button:hover {
   background-color: cornflowerblue;
   color: white;
 }
 
-#grid_container {
+#board_container {
   border: 2px solid black;
 }
 
@@ -20,16 +20,23 @@
   border: none;
 }
 
+#stats_box {
+  background-color: white;
+  border: 2px solid black;
+}
+
 #title {
   border: 1px solid black;
-  border-radius: 20px;
+  border-radius: 10px;
   background-color: rgb(250, 255, 173);
   font-size: 40px;
+  text-align: center;
 }
 
 #board_size_label {
   font-size: 30px;
   font-weight: bold;
+  text-align: center;
 }
 
 #empty_cell {

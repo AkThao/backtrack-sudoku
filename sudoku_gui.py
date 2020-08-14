@@ -4,7 +4,7 @@ from sys import exit as sysExit
 from PyQt5 import sip
 
 # Import QApplication and required widgets from PyQt5.QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QLabel, QFrame, QSlider, QDialog, QDialogButtonBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QTextEdit, QLabel, QFrame, QSlider, QDialog, QDialogButtonBox
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtCore import Qt
@@ -32,7 +32,7 @@ class SudokuUI(QWidget):
         super().__init__()
         self.title = "Sudoku"
         self.width = 800
-        self.height = 800
+        self.height = 1000
         self.init_UI()
 
     def keyPressEvent(self, keyEvent):
@@ -54,11 +54,13 @@ class SudokuUI(QWidget):
 
     def create_main_window(self):
         self.main_window = QMainWindow()
-        self.grid_container = QFrame()
-        self.grid_container.setFixedWidth(400)
-        self.grid_container.setFixedHeight(400)
-        self.grid_container.setObjectName("grid_container")
-        self.grid_container.setStyleSheet(self.styles)
+
+        # Board container
+        self.board_container = QFrame()
+        self.board_container.setFixedWidth(450)
+        self.board_container.setFixedHeight(450)
+        self.board_container.setObjectName("board_container")
+        self.board_container.setStyleSheet(self.styles)
         self.grid_layout = QGridLayout()
         self.placeholder_text = QLabel("Select a board size")
         self.placeholder_text.setAlignment(Qt.AlignCenter)
@@ -68,52 +70,54 @@ class SudokuUI(QWidget):
         self.placeholder_font.setPointSize(40)
         self.placeholder_text.setFont(self.placeholder_font)
         self.grid_layout.addWidget(self.placeholder_text)
-        self.grid_container.setLayout(self.grid_layout)
+        self.board_container.setLayout(self.grid_layout)
 
-        # Create left side of GUI
-        self.left_side = QWidget()
-        self.left_side_layout = QVBoxLayout()
-        self.left_side.setLayout(self.left_side_layout)
-
-        # Create right side of GUI
-        self.right_side = QWidget()
-        self.right_side_layout = QVBoxLayout()
-        self.right_side.setLayout(self.right_side_layout)
-
-        # Add left and right side to complete GUI
-        self.full_app = QHBoxLayout()
-        self.full_app.addWidget(self.left_side)
-        self.full_app.addWidget(self.right_side)
-
-        # Create and style title label and add to left side
+        # Title section
+        self.title_section = QWidget()
+        self.title_section.setFixedHeight(80)
+        self.title_section_layout = QVBoxLayout()
+        self.title_section.setLayout(self.title_section_layout)
         self.title = QLabel("Sudoku Game and Solver")
-        self.title.setFixedWidth(400)
-        self.title.setWordWrap(True)
         self.title.setAlignment(Qt.AlignCenter)
         self.title.setObjectName("title")
         self.title.setStyleSheet(self.styles)
-        self.left_side_layout.addWidget(self.title)
+        self.title_section_layout.addWidget(self.title)
 
-        # Add board size buttons and grid to left side
+        # Board section = board container + board size choice
         self.create_board_size_button_group()
-        self.left_side_layout.addWidget(self.board_size_choice)
-        self.left_side_layout.addWidget(self.grid_container)
+        self.board_section = QWidget()
+        self.board_section_layout = QHBoxLayout()
+        self.board_section_layout.addWidget(self.board_container)
+        self.board_section_layout.addWidget(self.board_size_choice)
+        self.board_section_layout.setAlignment(Qt.AlignCenter)
+        self.board_section.setLayout(self.board_section_layout)
 
-        # Create solve button
-        self.create_right_side_buttons()
+        # Controls
+        self.controls_section = QWidget()
+        self.controls_section.setFixedWidth(250)
+        self.controls_layout = QVBoxLayout()
+        self.controls_section.setLayout(self.controls_layout)
 
-        self.setLayout(self.full_app)
+        self.solve_button = QPushButton("Solve", self)
+        self.solve_button.setObjectName("button")
+        self.solve_button.setStyleSheet(self.styles)
 
-    def add_stylesheet(self):
-        with open("styles.css") as file:
-            self.styles = file.read()
+        self.check_button = QPushButton("Check Solution", self)
+        self.check_button.setObjectName("button")
+        self.check_button.setStyleSheet(self.styles)
 
-    def create_right_side_buttons(self):
-        self.solve_button = QPushButton("SOLVE", self)
-        self.check_button = QPushButton("CHECK SOLUTION", self)
-        self.playthrough_button = QPushButton("PLAYTHROUGH", self)
-        self.pause_button = QPushButton("PAUSE", self)
+        self.playthrough_button = QPushButton("Playthrough", self)
+        self.playthrough_button.setObjectName("button")
+        self.playthrough_button.setStyleSheet(self.styles)
+
+        self.pause_button = QPushButton("Pause", self)
+        self.pause_button.setObjectName("button")
+        self.pause_button.setStyleSheet(self.styles)
+
         self.quit_button = QPushButton("Quit", self)
+        self.quit_button.setObjectName("button")
+        self.quit_button.setStyleSheet(self.styles)
+
         self.change_speed_slider = QSlider(Qt.Horizontal)
         self.change_speed_slider.setMinimum(1)
         self.change_speed_slider.setMaximum(1000)
@@ -123,54 +127,101 @@ class SudokuUI(QWidget):
         self.check_button.setDisabled(True)
         self.playthrough_button.setDisabled(True)
 
-        self.right_side_layout.addWidget(self.solve_button)
-        self.right_side_layout.addWidget(self.check_button)
-        self.right_side_layout.addWidget(self.playthrough_button)
-        self.right_side_layout.addWidget(self.pause_button)
-        self.right_side_layout.addWidget(self.quit_button)
-        self.right_side_layout.addWidget(self.change_speed_slider)
+        self.controls_layout.addWidget(self.solve_button)
+        self.controls_layout.addWidget(self.check_button)
+        self.controls_layout.addWidget(self.playthrough_button)
+        self.controls_layout.addWidget(self.pause_button)
+        self.controls_layout.addWidget(self.quit_button)
+        self.controls_layout.addWidget(self.change_speed_slider)
+
+        # Stats section
+        self.stats_box = QLabel()
+        self.stats_box.setFixedHeight(300)
+        self.stats_box.setFixedWidth(450)
+        self.stats_box.setWordWrap(True)
+        self.stats_box.setAlignment(Qt.AlignCenter)
+        self.stats_box.setText("""Welcome to the Sudoku Game and Solver!
+        Choose a board size to begin""")
+        self.stats_box.setObjectName("stats_box")
+        self.stats_box.setStyleSheet(self.styles)
+
+        # Bottom section = stats box + controls
+        self.bottom_section = QWidget()
+        self.bottom_layout = QHBoxLayout()
+        self.bottom_layout.addWidget(self.stats_box)
+        self.bottom_layout.addWidget(self.controls_section)
+        self.bottom_section.setLayout(self.bottom_layout)
+
+        # Entire app layout
+        self.full_app = QVBoxLayout()
+        self.full_app.addWidget(self.title_section)  # Top
+        self.full_app.addWidget(self.board_section)  # Middle
+        self.full_app.addWidget(self.bottom_section)  # Bottom
+
+        self.setLayout(self.full_app)
+
+    def add_stylesheet(self):
+        with open("styles.css") as file:
+            self.styles = file.read()
 
     def create_board_size_button_group(self):
         self.board_size_choice = QWidget()
-        self.board_size_choice.setFixedWidth(360)
-        self.board_size_choice.setFixedHeight(120)
+        self.board_size_choice.setFixedWidth(250)
+        self.board_size_choice.setFixedHeight(500)
         self.board_sizes = QWidget()
 
         self.button_layout = QVBoxLayout()
-        self.button_group = QHBoxLayout()
 
         self.button3 = QPushButton("3x3", self)
         self.button3.setToolTip("Pick a random 3x3 grid")
-        self.button3.setObjectName("board_size_button")
+        self.button3.setObjectName("button")
         self.button3.setStyleSheet(self.styles)
 
         self.button4 = QPushButton("4x4", self)
         self.button4.setToolTip("Pick a random 4x4 grid")
-        self.button4.setObjectName("board_size_button")
+        self.button4.setObjectName("button")
         self.button4.setStyleSheet(self.styles)
+
+        self.button5 = QPushButton("5x5", self)
+        self.button5.setToolTip("Pick a random 5x5 grid")
+        self.button5.setObjectName("button")
+        self.button5.setStyleSheet(self.styles)
 
         self.button6 = QPushButton("6x6", self)
         self.button6.setToolTip("Pick a random 6x6 grid")
-        self.button6.setObjectName("board_size_button")
+        self.button6.setObjectName("button")
         self.button6.setStyleSheet(self.styles)
+
+        self.button7 = QPushButton("7x7", self)
+        self.button7.setToolTip("Pick a random 7x7 grid")
+        self.button7.setObjectName("button")
+        self.button7.setStyleSheet(self.styles)
+
+        self.button8 = QPushButton("8x8", self)
+        self.button8.setToolTip("Pick a random 8x8 grid")
+        self.button8.setObjectName("button")
+        self.button8.setStyleSheet(self.styles)
 
         self.button9 = QPushButton("9x9", self)
         self.button9.setToolTip("Pick a random 9x9 grid")
-        self.button9.setObjectName("board_size_button")
+        self.button9.setObjectName("button")
         self.button9.setStyleSheet(self.styles)
-
-        self.button_group.addWidget(self.button3)
-        self.button_group.addWidget(self.button4)
-        self.button_group.addWidget(self.button6)
-        self.button_group.addWidget(self.button9)
-
-        self.board_sizes.setLayout(self.button_group)
 
         self.board_size_label = QLabel("Board size:")
         self.board_size_label.setObjectName("board_size_label")
         self.board_size_label.setStyleSheet(self.styles)
+        self.board_size_label.setAlignment(Qt.AlignCenter)
+
         self.button_layout.addWidget(self.board_size_label)
-        self.button_layout.addWidget(self.board_sizes)
+        self.button_layout.addWidget(self.button3)
+        self.button_layout.addWidget(self.button4)
+        self.button_layout.addWidget(self.button5)
+        self.button_layout.addWidget(self.button6)
+        self.button_layout.addWidget(self.button7)
+        self.button_layout.addWidget(self.button8)
+        self.button_layout.addWidget(self.button9)
+        self.button_layout.setAlignment(Qt.AlignTop)
+        self.button_layout.setSpacing(25)
 
         self.board_size_choice.setLayout(self.button_layout)
 
@@ -191,8 +242,8 @@ class SudokuUI(QWidget):
         for i in range(board_size):
             for j in range(board_size):
                 cell = QLineEdit(str(starting_board[i][j]))
-                cell.setFixedWidth(360/board_size)
-                cell.setFixedHeight(360/board_size)
+                cell.setFixedWidth(400/board_size)
+                cell.setFixedHeight(400/board_size)  # MAGIC NUMBERS, FIX THIS
                 cell.setAlignment(Qt.AlignCenter)
                 cell.setObjectName("empty_cell")
                 cell.setStyleSheet(self.styles)
@@ -206,4 +257,4 @@ class SudokuUI(QWidget):
 
         self.grid_layout.setSpacing(0)
         self.grid_layout.setContentsMargins(0, 0, 0, 0)
-        self.grid_container.setLayout(self.grid_layout)
+        self.board_container.setLayout(self.grid_layout)
