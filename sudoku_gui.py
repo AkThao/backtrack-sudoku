@@ -6,15 +6,18 @@ from PyQt5 import sip
 # Import QApplication and required widgets from PyQt5.QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QTextEdit, QLabel, QFrame, QSlider, QDialog, QDialogButtonBox
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QRegExp
+from PyQt5.QtGui import QRegExpValidator
+
 
 
 class ErrorDialog(QDialog):
-    def __init__(self):
+    def __init__(self, title, text):
         super().__init__()
-        self.setWindowTitle("Playthrough not running error")
+        self.setWindowTitle(title)
         self.setFixedSize(400, 200)
         self.layout = QVBoxLayout()
-        self.text = QLabel("Playthrough not running\nNothing to pause")
+        self.text = QLabel(text)
         self.button_box = QDialogButtonBox(QDialogButtonBox.Close)
         self.button_box.clicked.connect(self.closeEvent)
         self.layout.addWidget(self.text)
@@ -32,6 +35,8 @@ class SudokuUI(QWidget):
         self.width = 800
         self.height = 1000
         self.init_UI()
+        valid_characters = QRegExp("[0-9]")
+        self.validator = QRegExpValidator(valid_characters, self)
 
     def keyPressEvent(self, keyEvent):
         super(SudokuUI, self).keyPressEvent(keyEvent)
@@ -57,10 +62,9 @@ class SudokuUI(QWidget):
         self.setFixedSize(self.width, self.height)
         self.add_stylesheet()
         self.create_main_window()
-        self.create_error_dialogs()
 
-    def create_error_dialogs(self):
-        self.error_dialog = ErrorDialog()
+    def create_error_dialog(self, title, text):
+        self.error_dialog = ErrorDialog(title, text)
 
     def create_main_window(self):
         self.main_window = QMainWindow()
@@ -160,8 +164,7 @@ class SudokuUI(QWidget):
         self.stats_box.setFixedWidth(450)
         self.stats_box.setWordWrap(True)
         self.stats_box.setAlignment(Qt.AlignCenter)
-        self.stats_box.setText("""Welcome to the Sudoku Game and Solver!
-        Choose a board size to begin""")
+        self.stats_box.setText("Welcome to the Sudoku Game and Solver!\n\nChoose a board size to begin")
         self.stats_box.setObjectName("stats_box")
         self.stats_box.setStyleSheet(self.styles)
 
@@ -250,6 +253,7 @@ class SudokuUI(QWidget):
         for i in range(board_size):
             for j in range(board_size):
                 cell = QLineEdit(str(starting_board[i][j]))
+                cell.setValidator(self.validator)
                 cell.setFixedWidth(400/board_size)
                 cell.setFixedHeight(400/board_size)  # MAGIC NUMBERS, FIX THIS
                 cell.setAlignment(Qt.AlignCenter)
