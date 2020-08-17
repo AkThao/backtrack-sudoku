@@ -42,6 +42,7 @@ class SudokuCtrl:
             3: boards.boards_3,
             4: boards.boards_4,
             6: boards.boards_6,
+            8: boards.boards_8,
             9: boards.boards_9
         }
 
@@ -146,9 +147,7 @@ class SudokuCtrl:
         self._view.check_button.setDisabled(True)
         self._view.button3.setDisabled(True)
         self._view.button4.setDisabled(True)
-        self._view.button5.setDisabled(True)
         self._view.button6.setDisabled(True)
-        self._view.button7.setDisabled(True)
         self._view.button8.setDisabled(True)
         self._view.button9.setDisabled(True)
 
@@ -193,9 +192,7 @@ class SudokuCtrl:
         # Re-enable buttons now that animation has finished
         self._view.button3.setDisabled(False)
         self._view.button4.setDisabled(False)
-        self._view.button5.setDisabled(False)
         self._view.button6.setDisabled(False)
-        self._view.button7.setDisabled(False)
         self._view.button8.setDisabled(False)
         self._view.button9.setDisabled(False)
         self._view.change_speed_slider.setDisabled(False)
@@ -250,10 +247,8 @@ class SudokuCtrl:
         """Set up controller interface by connecting signals from GUI components to relevant slots"""
         self._view.button3.clicked.connect(lambda: self.pick_random_board(3))
         self._view.button4.clicked.connect(lambda: self.pick_random_board(4))
-        # self._view.button5.clicked.connect(lambda: self.pick_random_board(5))
         self._view.button6.clicked.connect(lambda: self.pick_random_board(6))
-        # self._view.button7.clicked.connect(lambda: self.pick_random_board(7))
-        # self._view.button8.clicked.connect(lambda: self.pick_random_board(8))
+        self._view.button8.clicked.connect(lambda: self.pick_random_board(8))
         self._view.button9.clicked.connect(lambda: self.pick_random_board(9))
 
         self._view.solve_button.clicked.connect(self.show_answer)
@@ -289,6 +284,7 @@ if __name__ == "__main__":
 
 
 # TODO:
-# Add boards of sizes 5, 7 and 8
+# Make sure there are at least 10 boards of each size
 # Make stats box dynamic and display real-time stats during playthrough
 # Add functionality for user to enter their own board - FUTURE
+# Add capability for solver to handle boards with non-rectangular subgrids (5x5, 7x7 boards, etc.)

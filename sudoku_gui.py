@@ -42,6 +42,15 @@ class SudokuUI(QWidget):
         if keyEvent.key() == Qt.Key_Space:
             self.pause_button.click()
 
+        if keyEvent.key() == Qt.Key_P:
+            self.playthrough_button.click()
+
+        if keyEvent.key() == Qt.Key_S:
+            self.solve_button.click()
+
+        if keyEvent.key() == Qt.Key_C:
+            self.check_button.click()
+
     def init_UI(self):
         # Set some main window properties
         self.setWindowTitle(self.title)
@@ -99,15 +108,15 @@ class SudokuUI(QWidget):
         self.controls_layout = QVBoxLayout()
         self.controls_section.setLayout(self.controls_layout)
 
-        self.solve_button = QPushButton("Solve", self)
+        self.solve_button = QPushButton("Solve (s)", self)
         self.solve_button.setObjectName("button")
         self.solve_button.setStyleSheet(self.styles)
 
-        self.check_button = QPushButton("Check Solution", self)
+        self.check_button = QPushButton("Check Solution (c)", self)
         self.check_button.setObjectName("button")
         self.check_button.setStyleSheet(self.styles)
 
-        self.playthrough_button = QPushButton("Playthrough", self)
+        self.playthrough_button = QPushButton("Playthrough (p)", self)
         self.playthrough_button.setObjectName("button")
         self.playthrough_button.setStyleSheet(self.styles)
 
@@ -115,10 +124,19 @@ class SudokuUI(QWidget):
         self.pause_button.setObjectName("button")
         self.pause_button.setStyleSheet(self.styles)
 
-        self.quit_button = QPushButton("Quit", self)
+        self.quit_button = QPushButton("Quit (q)", self)
         self.quit_button.setObjectName("button")
         self.quit_button.setStyleSheet(self.styles)
 
+        # Slider text
+        self.slider_text = QWidget()
+        self.slider_text_layout = QHBoxLayout()
+        self.slider_fast = QLabel("Fast")
+        self.slider_slow = QLabel("Slow")
+        self.slider_slow.setAlignment(Qt.AlignRight)
+        self.slider_text_layout.addWidget(self.slider_fast)
+        self.slider_text_layout.addWidget(self.slider_slow)
+        self.slider_text.setLayout(self.slider_text_layout)
         self.change_speed_slider = QSlider(Qt.Horizontal)
         self.change_speed_slider.setMinimum(1)
         self.change_speed_slider.setMaximum(1000)
@@ -131,9 +149,10 @@ class SudokuUI(QWidget):
         self.controls_layout.addWidget(self.solve_button)
         self.controls_layout.addWidget(self.check_button)
         self.controls_layout.addWidget(self.playthrough_button)
+        self.controls_layout.addWidget(self.slider_text)
+        self.controls_layout.addWidget(self.change_speed_slider)
         self.controls_layout.addWidget(self.pause_button)
         self.controls_layout.addWidget(self.quit_button)
-        self.controls_layout.addWidget(self.change_speed_slider)
 
         # Stats section
         self.stats_box = QLabel()
@@ -183,20 +202,10 @@ class SudokuUI(QWidget):
         self.button4.setObjectName("button")
         self.button4.setStyleSheet(self.styles)
 
-        self.button5 = QPushButton("5x5", self)
-        self.button5.setToolTip("Pick a random 5x5 grid")
-        self.button5.setObjectName("button")
-        self.button5.setStyleSheet(self.styles)
-
         self.button6 = QPushButton("6x6", self)
         self.button6.setToolTip("Pick a random 6x6 grid")
         self.button6.setObjectName("button")
         self.button6.setStyleSheet(self.styles)
-
-        self.button7 = QPushButton("7x7", self)
-        self.button7.setToolTip("Pick a random 7x7 grid")
-        self.button7.setObjectName("button")
-        self.button7.setStyleSheet(self.styles)
 
         self.button8 = QPushButton("8x8", self)
         self.button8.setToolTip("Pick a random 8x8 grid")
@@ -216,9 +225,7 @@ class SudokuUI(QWidget):
         self.button_layout.addWidget(self.board_size_label)
         self.button_layout.addWidget(self.button3)
         self.button_layout.addWidget(self.button4)
-        self.button_layout.addWidget(self.button5)
         self.button_layout.addWidget(self.button6)
-        self.button_layout.addWidget(self.button7)
         self.button_layout.addWidget(self.button8)
         self.button_layout.addWidget(self.button9)
         self.button_layout.setAlignment(Qt.AlignTop)
