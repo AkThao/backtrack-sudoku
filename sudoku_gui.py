@@ -5,8 +5,6 @@ from PyQt5 import sip
 
 # Import QApplication and required widgets from PyQt5.QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QTextEdit, QLabel, QFrame, QSlider, QDialog, QDialogButtonBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtCore import Qt
 
 
@@ -40,6 +38,9 @@ class SudokuUI(QWidget):
 
         if keyEvent.key() == Qt.Key_Q:
             sysExit()
+
+        if keyEvent.key() == Qt.Key_Space:
+            self.pause_button.click()
 
     def init_UI(self):
         # Set some main window properties
@@ -110,7 +111,7 @@ class SudokuUI(QWidget):
         self.playthrough_button.setObjectName("button")
         self.playthrough_button.setStyleSheet(self.styles)
 
-        self.pause_button = QPushButton("Pause", self)
+        self.pause_button = QPushButton("Pause (spacebar)", self)
         self.pause_button.setObjectName("button")
         self.pause_button.setStyleSheet(self.styles)
 

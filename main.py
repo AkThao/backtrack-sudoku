@@ -55,7 +55,7 @@ class SudokuCtrl:
         self._view.check_button.setDisabled(False)
         self._view.playthrough_button.setDisabled(False)
         self._view.change_speed_slider.setDisabled(False)
-        self._view.pause_button.setText("Pause")
+        self._view.pause_button.setText("Pause (spacebar)")
         self._view.pause_button.repaint()
         self._view.pause_button.clicked.disconnect()
         self._view.pause_button.clicked.connect(self.pause_animation)
@@ -161,7 +161,7 @@ class SudokuCtrl:
         # Used to control pausing/resuming of the animation
         self.is_animating = True
 
-        self._view.pause_button.setText("Pause")
+        self._view.pause_button.setText("Pause (spacebar)")
         self._view.pause_button.repaint()
         self._view.pause_button.clicked.disconnect()
         self._view.pause_button.clicked.connect(self.pause_animation)
@@ -206,10 +206,11 @@ class SudokuCtrl:
         if self.is_animating:
             self.is_animating = False
             self._view.change_speed_slider.setDisabled(False)
+            self._view.solve_button.setDisabled(False)
             # The animation is "paused" by emptying the board_states list so the while loop in self.run_animation stops
             self.temp_board_states, self.board_states = self.board_states, []
             # Change the pause button to a continue button
-            self._view.pause_button.setText("Continue")
+            self._view.pause_button.setText("Continue (spacebar)")
             self._view.pause_button.repaint()
             self._view.pause_button.clicked.disconnect()
             self._view.pause_button.clicked.connect(self.continue_animation)
@@ -222,10 +223,11 @@ class SudokuCtrl:
         """Resume the backtrack algorithm solving animation"""
         # Don't need to set self.is_animating = True, as this is done in self.run_animation
         self._view.change_speed_slider.setDisabled(True)
+        self._view.solve_button.setDisabled(True)
         # Refill the board_states list and "resume" the while loop in self.run_animation from where it left off
         self.board_states = self.temp_board_states
         # Change the continue button to a pause button
-        self._view.pause_button.setText("Pause")
+        self._view.pause_button.setText("Pause (spacebar)")
         self._view.pause_button.repaint()
         self._view.pause_button.clicked.disconnect()
         self._view.pause_button.clicked.connect(self.pause_animation)
@@ -287,4 +289,6 @@ if __name__ == "__main__":
 
 
 # TODO:
-# Add functionality for user to enter their own board
+# Add boards of sizes 5, 7 and 8
+# Make stats box dynamic and display real-time stats during playthrough
+# Add functionality for user to enter their own board - FUTURE
