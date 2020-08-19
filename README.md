@@ -2,7 +2,6 @@
 
 Sudoku solver using the backtrack algorithm
 
-![screenshot of app](screenshot.png "App")
 
 ## The project
 
