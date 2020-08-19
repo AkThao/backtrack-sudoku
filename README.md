@@ -2,7 +2,7 @@
 
 Sudoku solver using the backtrack algorithm
 
-![screenshot of app](screenshot.png "App")
+![screenshot of app](new_screenshot.png "App")
 
 ## The project
 
