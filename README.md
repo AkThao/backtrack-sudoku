@@ -4,6 +4,8 @@ Sudoku solver using the backtrack algorithm
 
 ![screenshot of app](screenshot.png "App")
 
+Link to demo [here](https://youtu.be/n5upYqQ27mI)
+
 ## The project
 
 An app that allows the user to try their hand at solving a range of sudoku puzzles of various sizes and difficulties.
