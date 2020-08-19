@@ -13,7 +13,7 @@ import time
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QThread, QObject
 
-__version__ = "0.4"
+__version__ = "0.5"
 __author__ = "Akaash Thao"
 
 
@@ -73,39 +73,38 @@ class SudokuCtrl:
 
     # Set of functions to update the stats box based on the current state of the app
     def display_new_board_stats(self):
-        self._view.stats_box.setText(
-            f"New board\n\nBoard size: {self.board_size}\nNumber of empty cells: {len(self.empty_cells)}")
+        self._view.stats_box.current_text = f"New board\n\nBoard size: {self.board_size}\nNumber of empty cells: {len(self.empty_cells)}"
+        self._view.stats_box.setText(self._view.stats_box.current_text)
         self._view.stats_box.repaint()
 
     def display_solved_stats(self, time):
-        self._view.stats_box.setText(
-            f"Time taken to solve puzzle: {str(time*1000)[:5]} ms\n\nNumber of steps taken: {self.num_states}\n\nNumber of backtracks: {self.num_backtracks}")
+        self._view.stats_box.current_text = f"Time taken to solve puzzle: {str(time*1000)[:5]} ms\n\nNumber of steps taken: {self.num_states}\n\nNumber of backtracks: {self.num_backtracks}"
+        self._view.stats_box.setText(self._view.stats_box.current_text)
         self._view.stats_box.repaint()
 
     def display_check_stats(self, correct, incorrect):
-        self._view.stats_box.setText(
-            f"Cells correct: {correct}\n\nCells incorrect: {incorrect}\n\nScore: {correct/(correct+incorrect)*100:.1f}%")
+        self._view.stats_box.current_text = f"Cells correct: {correct}\n\nCells incorrect: {incorrect}\n\nScore: {correct/(correct+incorrect)*100:.1f}%"
+        self._view.stats_box.setText(self._view.stats_box.current_text)
         self._view.stats_box.repaint()
 
     def display_playthrough_stats(self):
-        self._view.stats_box.setText(
-            f"Current step: {self.step_count}\n\nNumber of backtracks: {self.num_backtracks}")
+        self._view.stats_box.current_text = f"Current step: {self.step_count}\n\nNumber of backtracks: {self.num_backtracks}"
+        self._view.stats_box.setText(self._view.stats_box.current_text)
         self._view.stats_box.repaint()
 
     def display_input_custom_board_stats(self):
-        self._view.stats_box.setText(
-            f"New board of size {self.board_size}x{self.board_size}\n\nEnter values for a puzzle of your own then click \"Done\" to have the solver attempt to solve the puzzle."
-        )
+        self._view.stats_box.current_text = f"New board of size {self.board_size}x{self.board_size}\n\nEnter values for a puzzle of your own then click \"Done\" to have the solver attempt to solve the puzzle."
+        self._view.stats_box.setText(self._view.stats_box.current_text)
         self._view.stats_box.repaint()
 
     def display_currently_solving_stats(self):
-        self._view.stats_box.setText("Solving...")
+        self._view.stats_box.current_text = "Running animation..."
+        self._view.stats_box.setText(self._view.stats_box.current_text)
         self._view.repaint()
 
     def display_invalid_board_stats(self, error_message):
-        self._view.stats_box.setText(
-            f"<html>Invalid board, could not be solved.<br><br><b>{error_message}.</b><br><br>Please check that all input values satisfy the rules of Sudoku.</html>"
-        )
+        self._view.stats_box.current_text = f"<html>Invalid board, could not be solved.<br><br><b>{error_message}.</b><br><br>Please check that all input values satisfy the rules of Sudoku.</html>"
+        self._view.stats_box.setText(self._view.stats_box.current_text)
         self._view.stats_box.repaint()
 
     def input_custom_board(self):
@@ -139,9 +138,9 @@ class SudokuCtrl:
 
         # Validate the board using a function from the solver file
         # is_board_valid can take two forms:
-            # For valid boards, it will be: is_board_valid = (True, "No error")
-            # For invalid board, it will take the form: is_board_valid = (False, ERROR_CODE, row, col)
-            # where row and col represent the problem cell
+        # For valid boards, it will be: is_board_valid = (True, "No error")
+        # For invalid board, it will take the form: is_board_valid = (False, ERROR_CODE, row, col)
+        # where row and col represent the problem cell
         is_board_valid = self._solver.validate_board(board=self.board,
                                                      board_size=self.board_size,
                                                      subgrid_height=self.board_data[2],
@@ -150,7 +149,6 @@ class SudokuCtrl:
         if is_board_valid[0]:
             # Solve the board and display the result, along with the relevant stats
             self._view.create_grid(self.board_size, self.board)
-            self.display_currently_solving_stats()
             self.show_answer()
             self._view.add_board_button.setText("Enter custom board")
             self._view.add_board_button.repaint()
@@ -167,7 +165,8 @@ class SudokuCtrl:
             for i in range(self.board_size):
                 for j in range(self.board_size):
                     self.change_cell_style(i, j, "empty_cell")
-            self.change_cell_style(incorrect_cell[0], incorrect_cell[1], "incorrect_cell")
+            self.change_cell_style(
+                incorrect_cell[0], incorrect_cell[1], "incorrect_cell")
 
     def solve_puzzle(self):
         """Call the backtrack algorithm and store the result as a member variable"""
@@ -191,6 +190,8 @@ class SudokuCtrl:
         self._view.solve_button.setDisabled(True)
         self._view.check_button.setDisabled(True)
         self._view.playthrough_button.setDisabled(True)
+        self._view.pause_button.setDisabled(True)
+        self.display_currently_solving_stats()
         QApplication.processEvents()
         for cell in self.empty_cells:
             self.update_cell(cell[0], cell[1], str(
@@ -211,6 +212,7 @@ class SudokuCtrl:
         self._view.button9.setDisabled(False)
         self._view.add_board_button.setDisabled(False)
         self._view.playthrough_button.setDisabled(False)
+        self._view.pause_button.setDisabled(False)
 
     def update_cell(self, row, col, value):
         """Update cell at [row, col] to show 'value'"""
@@ -389,6 +391,7 @@ class SudokuCtrl:
             self._view.solve_button.setDisabled(False)
             # The animation is "paused" by emptying the board_states list so the while loop in self.run_animation stops
             self.temp_board_states, self.board_states = self.board_states, []
+            self.current_num_backtracks = self.num_backtracks
             # Change the pause button to a continue button
             self._view.pause_button.setText("Continue (spacebar)")
             self._view.pause_button.repaint()
@@ -408,6 +411,7 @@ class SudokuCtrl:
         self._view.solve_button.setDisabled(True)
         # Refill the board_states list and "resume" the while loop in self.run_animation from where it left off
         self.board_states = self.temp_board_states
+        self.num_backtracks = self.current_num_backtracks
         # Change the continue button to a pause button
         self._view.pause_button.setText("Pause (spacebar)")
         self._view.pause_button.repaint()

@@ -4,11 +4,9 @@ from sys import exit as sysExit
 from PyQt5 import sip
 
 # Import QApplication and required widgets from PyQt5.QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QTextEdit, QLabel, QFrame, QSlider, QDialog, QDialogButtonBox
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QRegExp
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QGridLayout, QLineEdit, QTextEdit, QLabel, QFrame, QSlider, QDialog, QDialogButtonBox, QGraphicsView
+from PyQt5.QtCore import Qt, QRegExp
 from PyQt5.QtGui import QRegExpValidator
-
 
 
 class ErrorDialog(QDialog):
@@ -26,6 +24,28 @@ class ErrorDialog(QDialog):
 
     def closeEvent(self, event):
         self.done(0)
+
+
+class StatsBox(QLabel):
+    def __init__(self):
+        super().__init__()
+        self.setFixedHeight(300)
+        self.setFixedWidth(450)
+        self.setWordWrap(True)
+        self.setAlignment(Qt.AlignCenter)
+        self.current_text = "Welcome to the Sudoku Game and Solver!\n\nChoose a board size to begin"
+        self.hover_text = "<html style='font-size: 20px;'>This app solves sudoku puzzles using the backtracking algorithm.<br><br>It is a straightforward algorithm that will find a solution to any puzzle (though the most evil puzzles will take a while).<br><br>More information can be found <a style='color: steelblue;' href='https://www.youtube.com/watch?v=JzONv5kaPJM&t=339s'>here</a>.</html>"
+        self.setText(self.current_text)
+        self.setOpenExternalLinks(True)
+        self.setObjectName("stats_box")
+        self.setMouseTracking(True)
+
+    def enterEvent(self, e):
+        self.current_text = self.text()
+        self.setText(self.hover_text)
+
+    def leaveEvent(self, e):
+        self.setText(self.current_text)
 
 
 class SudokuUI(QWidget):
@@ -159,14 +179,17 @@ class SudokuUI(QWidget):
         self.controls_layout.addWidget(self.quit_button)
 
         # Stats section
-        self.stats_box = QLabel()
-        self.stats_box.setFixedHeight(300)
-        self.stats_box.setFixedWidth(450)
-        self.stats_box.setWordWrap(True)
-        self.stats_box.setAlignment(Qt.AlignCenter)
-        self.stats_box.setText("Welcome to the Sudoku Game and Solver!\n\nChoose a board size to begin")
-        self.stats_box.setObjectName("stats_box")
+        # self.stats_box = QLabel()
+        self.stats_box = StatsBox()
         self.stats_box.setStyleSheet(self.styles)
+        # self.stats_box.setFixedHeight(300)
+        # self.stats_box.setFixedWidth(450)
+        # self.stats_box.setWordWrap(True)
+        # self.stats_box.setAlignment(Qt.AlignCenter)
+        # self.stats_box.setText(
+        #     "Welcome to the Sudoku Game and Solver!\n\nChoose a board size to begin")
+        # self.stats_box.setObjectName("stats_box")
+        # self.stats_box.setStyleSheet(self.styles)
 
         # Bottom section = stats box + controls
         self.bottom_section = QWidget()
@@ -221,7 +244,8 @@ class SudokuUI(QWidget):
         self.button9.setStyleSheet(self.styles)
 
         self.add_board_button = QPushButton("Enter custom board", self)
-        self.add_board_button.setToolTip("Enter a board of your own for the solver to attempt")
+        self.add_board_button.setToolTip(
+            "Enter a board of your own for the solver to attempt")
         self.add_board_button.setObjectName("button")
         self.add_board_button.setStyleSheet(self.styles)
         self.add_board_button.setDisabled(True)
