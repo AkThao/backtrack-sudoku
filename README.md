@@ -22,7 +22,7 @@ The user can try to solve the puzzle and check their solution, or simply ask the
 
 `main.py` is the controller that connects the model (solver) and the view (GUI).
 
-There are programs to test both algorithms on 3x3, 4x4, 6x6 and 9x9 boards, but can generalise to solve any size board.
+There are programs to test the algorithm on 3x3, 4x4, 6x6, 8x8 and 9x9 boards, which are the same boards built in to the app.
 
 ## Dependencies
 ```
@@ -35,3 +35,5 @@ PyQt5
 Add a stepper so the user can take a closer look at the solving algorithm by stepping forward through each iteration or running it back in time.
 
 Add some heuristics to speed up/vary the solving algorithm, so it's not purely backtracking.
+
+Add an ability for the user to save a custom board locally so it becomes on of the app's built-in boards.
