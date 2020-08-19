@@ -4,7 +4,7 @@ Sudoku solver using the backtrack algorithm
 
 ![screenshot of app](screenshot.png "App")
 
-Link to demo [here](https://youtu.be/n5upYqQ27mI)
+Link to demo <a href="https://youtu.be/n5upYqQ27mI" target="_blank">here</a>
 
 ## The project
 
