@@ -71,6 +71,7 @@ class SudokuCtrl:
         self.display_new_board_stats()
         self.step_count = 0
 
+    # Set of functions to update the stats box based on the current state of the app
     def display_new_board_stats(self):
         self._view.stats_box.setText(
             f"New board\n\nBoard size: {self.board_size}\nNumber of empty cells: {len(self.empty_cells)}")
@@ -108,12 +109,14 @@ class SudokuCtrl:
         self._view.stats_box.repaint()
 
     def input_custom_board(self):
+        """Present the user with an empty board and accept their own input for a new puzzle"""
         self.board = [[0] * self.board_size for i in range(self.board_size)]
         self._view.create_grid(self.board_size, self.board)
         self._view.solve_button.setDisabled(True)
         self._view.check_button.setDisabled(True)
         self._view.playthrough_button.setDisabled(True)
         self.display_input_custom_board_stats()
+        self.empty_cells = []
 
         self._view.add_board_button.setText("Done")
         self._view.add_board_button.repaint()
@@ -121,21 +124,31 @@ class SudokuCtrl:
         self._view.add_board_button.clicked.connect(self.test_custom_board)
 
     def test_custom_board(self):
+        """Attempt to solve the board given by the user, use the stats box to indicate whether or not the board is valid"""
+        # First check for unfilled cells, every cell must contain a number, even if they are all zeroes
         if (self.check_for_unfilled_cells()):
             self._view.create_error_dialog(
                 "Empty Cell Error", "Cannot test board, it has unfilled cells.\n\nPlease fill in all cells to continue.\nCells to be solved should contain a zero.")
             self._view.error_dialog.exec_()
             return
 
+        # Read the board input and store it locally
         self.get_current_board_state()
         self.board = self.current_board_state
         self.get_empty_cells()
+
+        # Validate the board using a function from the solver file
+        # is_board_valid can take two forms:
+            # For valid boards, it will be: is_board_valid = (True, "No error")
+            # For invalid board, it will take the form: is_board_valid = (False, ERROR_CODE, row, col)
+            # where row and col represent the problem cell
         is_board_valid = self._solver.validate_board(board=self.board,
                                                      board_size=self.board_size,
                                                      subgrid_height=self.board_data[2],
                                                      subgrid_width=self.board_data[3])
 
         if is_board_valid[0]:
+            # Solve the board and display the result, along with the relevant stats
             self._view.create_grid(self.board_size, self.board)
             self.display_currently_solving_stats()
             self.show_answer()
@@ -144,9 +157,10 @@ class SudokuCtrl:
             self._view.add_board_button.clicked.disconnect()
             self._view.add_board_button.clicked.connect(
                 self.input_custom_board)
-            self._view.playthrough_button.setDisabled(False)
 
         else:
+            # Display the error message to the user and highlight the problem cell
+            # User can keep trying or move on and use a built-in puzzle
             error_message = is_board_valid[1]
             incorrect_cell = (is_board_valid[2], is_board_valid[3])
             self.display_invalid_board_stats(error_message)
@@ -275,12 +289,15 @@ class SudokuCtrl:
         self.num_states = len(self.board_states)
 
     def is_backtrack(self, prev_state, new_state):
+        """Return True or False depending on whether or not the algorithm has backtracked"""
         prev_num_zeroes = sum(row.count(0) for row in prev_state)
         new_num_zeroes = sum(row.count(0) for row in new_state)
 
+        # If there are more zeroes now than before, it means the algorithm has backtracked
         return (new_num_zeroes > prev_num_zeroes)
 
     def count_backtracks(self):
+        """Count the number of backtracks required to solve a puzzle"""
         self.num_backtracks = 0
         for i in range(1, len(self.board_states)):
             self.num_backtracks += self.is_backtrack(
@@ -404,7 +421,7 @@ class SudokuCtrl:
         self.empty_cells = self._solver.return_list_of_empty_cells(self.board)
 
     def quit(self):
-        """Run sys.exit()"""
+        """Call sys.exit()"""
         sysExit()
 
     def _connect_signals(self):

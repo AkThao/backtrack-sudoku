@@ -1,6 +1,7 @@
 import pickle
 
 
+# These will be used in the GUI to let the user know why their board is invalid
 ERROR_CODES = {
     0: "No error",
     1: "Duplicate value in row",
