@@ -187,6 +187,7 @@ class SudokuCtrl:
         self._view.button6.setDisabled(True)
         self._view.button8.setDisabled(True)
         self._view.button9.setDisabled(True)
+        self._view.add_board_button.setDisabled(True)
         self._view.solve_button.setDisabled(True)
         self._view.check_button.setDisabled(True)
         self._view.playthrough_button.setDisabled(True)
@@ -208,6 +209,7 @@ class SudokuCtrl:
         self._view.button6.setDisabled(False)
         self._view.button8.setDisabled(False)
         self._view.button9.setDisabled(False)
+        self._view.add_board_button.setDisabled(False)
         self._view.playthrough_button.setDisabled(False)
 
     def update_cell(self, row, col, value):
@@ -257,7 +259,7 @@ class SudokuCtrl:
         self.get_current_board_state()
         self.solve_puzzle()
 
-        # No need to solve/check twice
+        # No need to check twice
         self._view.solve_button.setDisabled(True)
         self._view.check_button.setDisabled(True)
 
@@ -274,6 +276,7 @@ class SudokuCtrl:
                 incorrect += 1
 
         self.display_check_stats(correct, incorrect)
+        self._view.solve_button.setDisabled(False)
 
     def get_board_states(self):
         """Retrieve current puzzle's solution, saved to file by solver"""
@@ -318,6 +321,7 @@ class SudokuCtrl:
         self._view.button6.setDisabled(True)
         self._view.button8.setDisabled(True)
         self._view.button9.setDisabled(True)
+        self._view.add_board_button.setDisabled(True)
 
         # Chosen to disable the slider during animation for now
         # Because animation and slider both run on main thread
@@ -372,6 +376,7 @@ class SudokuCtrl:
         self._view.button6.setDisabled(False)
         self._view.button8.setDisabled(False)
         self._view.button9.setDisabled(False)
+        self._view.add_board_button.setDisabled(False)
         self._view.change_speed_slider.setDisabled(False)
         self._view.solve_button.setDisabled(False)
         self.is_animating = False
