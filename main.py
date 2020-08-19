@@ -49,18 +49,23 @@ class SudokuCtrl:
 
     def pick_random_board(self, board_size):
         """Choose a random board of a specified size and set the controls appropriately"""
-        self.board_data = self.boards_lists[board_size]
+        self.board_size = board_size
+        self.board_data = self.boards_lists[self.board_size]
         self.board = random.choice(self.board_data[0])
-        self.board_size = len(self.board)
-        self._view.create_grid(board_size, self.board)
+        self._view.create_grid(self.board_size, self.board)
         self._view.solve_button.setDisabled(False)
         self._view.check_button.setDisabled(False)
         self._view.playthrough_button.setDisabled(False)
         self._view.change_speed_slider.setDisabled(False)
+        self._view.add_board_button.setDisabled(False)
         self._view.pause_button.setText("Pause (spacebar)")
         self._view.pause_button.repaint()
         self._view.pause_button.clicked.disconnect()
         self._view.pause_button.clicked.connect(self.pause_animation)
+        self._view.add_board_button.setText("Enter custom board")
+        self._view.add_board_button.repaint()
+        self._view.add_board_button.clicked.disconnect()
+        self._view.add_board_button.clicked.connect(self.input_custom_board)
         self.temp_board_states = []
         self.get_empty_cells()
         self.display_new_board_stats()
@@ -71,7 +76,7 @@ class SudokuCtrl:
             f"New board\n\nBoard size: {self.board_size}\nNumber of empty cells: {len(self.empty_cells)}")
         self._view.stats_box.repaint()
 
-    def display_solve_stats(self, time):
+    def display_solved_stats(self, time):
         self._view.stats_box.setText(
             f"Time taken to solve puzzle: {str(time*1000)[:5]} ms\n\nNumber of steps taken: {self.num_states}\n\nNumber of backtracks: {self.num_backtracks}")
         self._view.stats_box.repaint()
@@ -86,6 +91,70 @@ class SudokuCtrl:
             f"Current step: {self.step_count}\n\nNumber of backtracks: {self.num_backtracks}")
         self._view.stats_box.repaint()
 
+    def display_input_custom_board_stats(self):
+        self._view.stats_box.setText(
+            f"New board of size {self.board_size}x{self.board_size}\n\nEnter values for a puzzle of your own then click \"Done\" to have the solver attempt to solve the puzzle."
+        )
+        self._view.stats_box.repaint()
+
+    def display_currently_solving_stats(self):
+        self._view.stats_box.setText("Solving...")
+        self._view.repaint()
+
+    def display_invalid_board_stats(self, error_message):
+        self._view.stats_box.setText(
+            f"<html>Invalid board, could not be solved.<br><br><b>{error_message}.</b><br><br>Please check that all input values satisfy the rules of Sudoku.</html>"
+        )
+        self._view.stats_box.repaint()
+
+    def input_custom_board(self):
+        self.board = [[0] * self.board_size for i in range(self.board_size)]
+        self._view.create_grid(self.board_size, self.board)
+        self._view.solve_button.setDisabled(True)
+        self._view.check_button.setDisabled(True)
+        self._view.playthrough_button.setDisabled(True)
+        self.display_input_custom_board_stats()
+
+        self._view.add_board_button.setText("Done")
+        self._view.add_board_button.repaint()
+        self._view.add_board_button.clicked.disconnect()
+        self._view.add_board_button.clicked.connect(self.test_custom_board)
+
+    def test_custom_board(self):
+        if (self.check_for_unfilled_cells()):
+            self._view.create_error_dialog(
+                "Empty Cell Error", "Cannot test board, it has unfilled cells.\n\nPlease fill in all cells to continue.\nCells to be solved should contain a zero.")
+            self._view.error_dialog.exec_()
+            return
+
+        self.get_current_board_state()
+        self.board = self.current_board_state
+        self.get_empty_cells()
+        is_board_valid = self._solver.validate_board(board=self.board,
+                                                     board_size=self.board_size,
+                                                     subgrid_height=self.board_data[2],
+                                                     subgrid_width=self.board_data[3])
+
+        if is_board_valid[0]:
+            self._view.create_grid(self.board_size, self.board)
+            self.display_currently_solving_stats()
+            self.show_answer()
+            self._view.add_board_button.setText("Enter custom board")
+            self._view.add_board_button.repaint()
+            self._view.add_board_button.clicked.disconnect()
+            self._view.add_board_button.clicked.connect(
+                self.input_custom_board)
+            self._view.playthrough_button.setDisabled(False)
+
+        else:
+            error_message = is_board_valid[1]
+            incorrect_cell = (is_board_valid[2], is_board_valid[3])
+            self.display_invalid_board_stats(error_message)
+            for i in range(self.board_size):
+                for j in range(self.board_size):
+                    self.change_cell_style(i, j, "empty_cell")
+            self.change_cell_style(incorrect_cell[0], incorrect_cell[1], "incorrect_cell")
+
     def solve_puzzle(self):
         """Call the backtrack algorithm and store the result as a member variable"""
         self.result = self._solver.main(BOARD=self.board,
@@ -99,8 +168,14 @@ class SudokuCtrl:
         self.solve_puzzle()
         end = time.time()
         time_taken = end - start
+        self._view.button3.setDisabled(True)
+        self._view.button4.setDisabled(True)
+        self._view.button6.setDisabled(True)
+        self._view.button8.setDisabled(True)
+        self._view.button9.setDisabled(True)
         self._view.solve_button.setDisabled(True)
         self._view.check_button.setDisabled(True)
+        self._view.playthrough_button.setDisabled(True)
         QApplication.processEvents()
         for cell in self.empty_cells:
             self.update_cell(cell[0], cell[1], str(
@@ -110,9 +185,16 @@ class SudokuCtrl:
             QThread.msleep(self.animation_speed)
         self.get_board_states()
         self.count_backtracks()
-        self.display_solve_stats(
+        self.display_solved_stats(
             time_taken)
         self.num_backtracks = 0
+
+        self._view.button3.setDisabled(False)
+        self._view.button4.setDisabled(False)
+        self._view.button6.setDisabled(False)
+        self._view.button8.setDisabled(False)
+        self._view.button9.setDisabled(False)
+        self._view.playthrough_button.setDisabled(False)
 
     def update_cell(self, row, col, value):
         """Update cell at [row, col] to show 'value'"""
@@ -332,6 +414,7 @@ class SudokuCtrl:
         self._view.button6.clicked.connect(lambda: self.pick_random_board(6))
         self._view.button8.clicked.connect(lambda: self.pick_random_board(8))
         self._view.button9.clicked.connect(lambda: self.pick_random_board(9))
+        self._view.add_board_button.clicked.connect(self.input_custom_board)
 
         self._view.solve_button.clicked.connect(self.show_answer)
         self._view.check_button.clicked.connect(self.check_answer)
@@ -367,6 +450,5 @@ if __name__ == "__main__":
 
 
 # TODO:
-# Add functionality for user to enter their own board
 # Try to swap fast and slow on slider - FUTURE
 # Add capability for solver to handle boards with non-rectangular subgrids (5x5, 7x7 boards, etc.) - FUTURE

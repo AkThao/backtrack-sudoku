@@ -220,6 +220,12 @@ class SudokuUI(QWidget):
         self.button9.setObjectName("button")
         self.button9.setStyleSheet(self.styles)
 
+        self.add_board_button = QPushButton("Enter custom board", self)
+        self.add_board_button.setToolTip("Enter a board of your own for the solver to attempt")
+        self.add_board_button.setObjectName("button")
+        self.add_board_button.setStyleSheet(self.styles)
+        self.add_board_button.setDisabled(True)
+
         self.board_size_label = QLabel("Board size:")
         self.board_size_label.setObjectName("board_size_label")
         self.board_size_label.setStyleSheet(self.styles)
@@ -231,6 +237,7 @@ class SudokuUI(QWidget):
         self.button_layout.addWidget(self.button6)
         self.button_layout.addWidget(self.button8)
         self.button_layout.addWidget(self.button9)
+        self.button_layout.addWidget(self.add_board_button)
         self.button_layout.setAlignment(Qt.AlignTop)
         self.button_layout.setSpacing(25)
 
