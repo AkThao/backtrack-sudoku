@@ -179,17 +179,8 @@ class SudokuUI(QWidget):
         self.controls_layout.addWidget(self.quit_button)
 
         # Stats section
-        # self.stats_box = QLabel()
         self.stats_box = StatsBox()
         self.stats_box.setStyleSheet(self.styles)
-        # self.stats_box.setFixedHeight(300)
-        # self.stats_box.setFixedWidth(450)
-        # self.stats_box.setWordWrap(True)
-        # self.stats_box.setAlignment(Qt.AlignCenter)
-        # self.stats_box.setText(
-        #     "Welcome to the Sudoku Game and Solver!\n\nChoose a board size to begin")
-        # self.stats_box.setObjectName("stats_box")
-        # self.stats_box.setStyleSheet(self.styles)
 
         # Bottom section = stats box + controls
         self.bottom_section = QWidget()
