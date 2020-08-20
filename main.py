@@ -17,10 +17,6 @@ __version__ = "0.5"
 __author__ = "Akaash Thao"
 
 
-class Worker(QObject):
-    pass
-
-
 class SudokuCtrl:
     def __init__(self, view, model):
         # Set up the app by adding the view and model to the GUI
