@@ -38,4 +38,4 @@ Add a stepper so the user can take a closer look at the solving algorithm by ste
 
 Add some heuristics to speed up/vary the solving algorithm, so it's not purely backtracking.
 
-Add an ability for the user to save a custom board locally so it becomes on of the app's built-in boards.
+Add an ability for the user to save a custom board locally so it becomes one of the app's built-in boards.
