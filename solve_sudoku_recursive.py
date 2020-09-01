@@ -1,4 +1,4 @@
-import pickle
+from copy import deepcopy
 
 
 # These will be used in the GUI to let the user know why their board is invalid
@@ -10,10 +10,25 @@ ERROR_CODES = {
     4: "Value out of range"
 }
 
+board_states = []
 
-def solve(board, board_size, subgrid_height, subgrid_width, output_file):
+
+def save_board_state(input_board):
+    board_states.append(deepcopy(input_board))
+
+
+def initialise_board_states():
+    global board_states
+    board_states = []
+
+
+def get_board_states():
+    return board_states
+
+
+def solve(board, board_size, subgrid_height, subgrid_width):
     empty_cell_found = find_empty_cell(board)
-    # If algorithm has reached the end and the board is full, it must be solved
+    # If algorithm has reached the end and the board is full, it is solved
     if not empty_cell_found:
         return True
     else:
@@ -22,10 +37,10 @@ def solve(board, board_size, subgrid_height, subgrid_width, output_file):
     for i in range(1, board_size + 1):  # Available nums (1-9 for a 9x9 board)
         if is_valid(board, i, row, col, subgrid_height, subgrid_width)[0]:
             board[row][col] = i  # If a number works, put it in the board
-            pickle.dump(board, output_file)
+            save_board_state(board)
 
             # Try to solve with the new board
-            if solve(board, board_size, subgrid_height, subgrid_width, output_file):
+            if solve(board, board_size, subgrid_height, subgrid_width):
                 return True
 
             board[row][col] = 0
@@ -109,6 +124,6 @@ def main(BOARD, board_size, subgrid_height=0, subgrid_width=0):
             row.append(BOARD[i][j])
         board.append(row)
 
-    with open("board_states.txt", "wb") as file:
-        solve(board, board_size, subgrid_height, subgrid_width, file)
+    initialise_board_states()
+    solve(board, board_size, subgrid_height, subgrid_width)
     return board

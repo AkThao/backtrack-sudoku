@@ -7,7 +7,6 @@ import solve_sudoku_recursive
 import boards
 from sys import exit as sysExit
 import random
-import pickle
 import time
 
 from PyQt5.QtWidgets import QApplication
@@ -177,6 +176,7 @@ class SudokuCtrl:
         self.solve_puzzle()
         end = time.time()
         time_taken = end - start
+        self.get_board_states()
         self._view.button3.setDisabled(True)
         self._view.button4.setDisabled(True)
         self._view.button6.setDisabled(True)
@@ -195,7 +195,6 @@ class SudokuCtrl:
             self.change_cell_style(cell[0], cell[1], "solved_cell")
             QApplication.processEvents()
             QThread.msleep(self.animation_speed)
-        self.get_board_states()
         self.count_backtracks()
         self.display_solved_stats(
             time_taken)
@@ -277,15 +276,9 @@ class SudokuCtrl:
         self._view.solve_button.setDisabled(False)
 
     def get_board_states(self):
-        """Retrieve current puzzle's solution, saved to file by solver"""
-        self.solve_puzzle()
+        """Retrieve current puzzle's solution, saved in a list by solver"""
         self.board_states = []
-        with open("board_states.txt", "rb") as fp:
-            while True:
-                try:
-                    self.board_states.append(pickle.load(fp))
-                except EOFError:
-                    break
+        self.board_states = self._solver.get_board_states()
 
         self.num_states = len(self.board_states)
 
@@ -441,6 +434,7 @@ class SudokuCtrl:
         self._view.solve_button.clicked.connect(self.show_answer)
         self._view.check_button.clicked.connect(self.check_answer)
         # Multiple successive connect statements for the same signal connect that signal to all specified slots
+        self._view.playthrough_button.clicked.connect(self.solve_puzzle)
         self._view.playthrough_button.clicked.connect(self.get_board_states)
         self._view.playthrough_button.clicked.connect(
             lambda: self.run_animation(True))
