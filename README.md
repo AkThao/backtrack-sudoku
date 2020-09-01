@@ -14,6 +14,8 @@ The user can try to solve the puzzle and check their solution, or simply ask the
 
 Link to demo [here](https://youtu.be/n5upYqQ27mI)
 
+Compiled downloadable apps [here](https://github.com/AkThao/sudoku_app)
+
 ## Important scripts
 
 `solve_sudoku.py` contains all the functions necessary to solve a given board.
