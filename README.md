@@ -12,9 +12,9 @@ It incorporates a built-in solver that rapidly solves puzzles of any size using 
 
 The user can try to solve the puzzle and check their solution, or simply ask the app to solve the puzzle itself. They can also watch a playthrough of the backtrack algorithm in action, at different speeds, serving as a learning tool.
 
-Link to demo [here](https://youtu.be/n5upYqQ27mI)
+Link to demo [here](https://youtu.be/n5upYqQ27mI).
 
-Compiled downloadable apps [here](https://github.com/AkThao/sudoku_app)
+Compiled downloadable apps [here](https://github.com/AkThao/sudoku_app).
 
 ## Important scripts
 
@@ -40,4 +40,4 @@ Add a stepper so the user can take a closer look at the solving algorithm by ste
 
 Add some heuristics to speed up/vary the solving algorithm, so it's not purely backtracking.
 
-Add an ability for the user to save a custom board locally so it becomes one of the app's built-in boards.
+Allow the user to save a custom board locally so it becomes one of the app's built-in boards.
